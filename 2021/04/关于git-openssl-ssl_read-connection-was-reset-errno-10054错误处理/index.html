@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="git, ssl, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  最近开发将本地仓库的代码push到远程仓库时，git Bash终端给出以下这个错误：">
+
+
+<meta property="og:description" content="  最近开发将本地仓库的代码push到远程仓库时，git Bash终端给出以下这个错误：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于Git  OpenSSL SSL_read: Connection was reset, errno 10054错误处理">
+<meta name="twitter:title" content="关于Git  OpenSSL SSL_read: Connection was reset, errno 10054错误处理">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  最近开发将本地仓库的代码push到远程仓库时，git Bash终端给出以下这个错误：">
+<meta name="twitter:description" content="  最近开发将本地仓库的代码push到远程仓库时，git Bash终端给出以下这个错误：">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-04-13T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-04-13T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="git">
+    
+  
+  
+    
+      <meta property="article:tag" content="git">
+    
+      <meta property="article:tag" content="ssl">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/5fe94383fbb7d1cc312153cbfc7e4860481a4089/git-cover.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/5fe94383fbb7d1cc312153cbfc7e4860481a4089/git-cover.png">
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/7f80aa8ad6e099dd68916157a6bf15148783b5fe/git-code-pad.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/7f80aa8ad6e099dd68916157a6bf15148783b5fe/git-code-pad.png">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>关于Git  OpenSSL SSL_read: Connection was reset, errno 10054错误处理</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://gitee.com/Edwardwmd/image-resource/raw/7f80aa8ad6e099dd68916157a6bf15148783b5fe/git-code-pad.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      关于Git  OpenSSL SSL_read: Connection was reset, errno 10054错误处理
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-04-13T00:00:00Z">
+        
+  
+  
+  
+  
+    13 四月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/git">git</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  最近开发将本地仓库的代码push到远程仓库时，git Bash终端给出以下这个错误：</p>
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/dd6fbeb1840f6b5901beb38671c0be052817318e/git_error.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/dd6fbeb1840f6b5901beb38671c0be052817318e/git_error.png" >
+  
+    </a>
+  
+  
+</div>
+
+<p>  先说说这个问题，10054时表示链接被等待方重置，这意味着已成功建立TCP连接（s_client表示CONNECTED），但是当从客户端向服务器发送更多数据时，服务器将关闭连接而不读取所有数据（并将TCP RST发送回去）。可能是防火墙问题，但也可能表明服务器配置存在问题，即服务器接受客户端，但由于配置无效而无法继续。这种无效的配置可能是缺少所请求数据，没有可用私钥的证书或其他权限的权限。</p>
+<p>  通过在git Bash终端输入以下命令行，即可解决：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-cassandra" data-lang="cassandra">git config <span style="color:#75715e">--global http.sslVerify &#34;false&#34;
+</span></code></pre></div>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/git/">git</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/ssl/">ssl</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/java-gc%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" data-tooltip="Java GC垃圾回收机制">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" data-tooltip="探索设计模式-单例模式">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/java-gc%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" data-tooltip="Java GC垃圾回收机制">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/" data-tooltip="探索设计模式-单例模式">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E5%2585%25B3%25E4%25BA%258Egit-openssl-ssl_read-connection-was-reset-errno-10054%25E9%2594%2599%25E8%25AF%25AF%25E5%25A4%2584%25E7%2590%2586%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E5%2585%25B3%25E4%25BA%258Egit-openssl-ssl_read-connection-was-reset-errno-10054%25E9%2594%2599%25E8%25AF%25AF%25E5%25A4%2584%25E7%2590%2586%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E5%2585%25B3%25E4%25BA%258Egit-openssl-ssl_read-connection-was-reset-errno-10054%25E9%2594%2599%25E8%25AF%25AF%25E5%25A4%2584%25E7%2590%2586%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/04\/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86\/';
+          
+            this.page.identifier = '\/2021\/04\/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

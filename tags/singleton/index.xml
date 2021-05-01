@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>singleton on </title>
+    <link>https://Edwardwmd.github.io/tags/singleton/</link>
+    <description>Recent content in singleton on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Fri, 09 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/tags/singleton/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>探索设计模式-单例模式</title>
+      <link>https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Fri, 09 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/</guid>
+      <description>&lt;p&gt;  众所周知，单例模式是所有设计模式中最常运用且简单的设计模式，单例模式有多种写法（变种写法），自己归纳了六种写法：饿汉式、非线程安全懒汉式、线程安全懒汉式、DCL双重校验锁懒汉式、静态内部类懒汉式、枚举类式。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

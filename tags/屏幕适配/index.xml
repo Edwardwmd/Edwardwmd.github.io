@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>屏幕适配 on </title>
+    <link>https://Edwardwmd.github.io/tags/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/</link>
+    <description>Recent content in 屏幕适配 on </description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>zh-cn</language>
+    <lastBuildDate>Tue, 20 Apr 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/tags/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Android屏幕适配的那些事</title>
+      <link>https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/</link>
+      <pubDate>Tue, 20 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/</guid>
+      <description>&lt;p&gt;  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

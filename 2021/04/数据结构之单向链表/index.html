@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="数据结构, 链表, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  单向链表是链表的一种，其特点是链表的链接方向是单向的，对链表的访问要通过顺序读取从头部开始。链表是使用指针进行构造的列表，并且是由一个个结点组装起来的，因此又称为结点列表。">
+
+
+<meta property="og:description" content="  单向链表是链表的一种，其特点是链表的链接方向是单向的，对链表的访问要通过顺序读取从头部开始。链表是使用指针进行构造的列表，并且是由一个个结点组装起来的，因此又称为结点列表。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构之单向链表">
+<meta name="twitter:title" content="数据结构之单向链表">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  单向链表是链表的一种，其特点是链表的链接方向是单向的，对链表的访问要通过顺序读取从头部开始。链表是使用指针进行构造的列表，并且是由一个个结点组装起来的，因此又称为结点列表。">
+<meta name="twitter:description" content="  单向链表是链表的一种，其特点是链表的链接方向是单向的，对链表的访问要通过顺序读取从头部开始。链表是使用指针进行构造的列表，并且是由一个个结点组装起来的，因此又称为结点列表。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-04-30T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-04-30T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Java">
+    
+  
+  
+    
+      <meta property="article:tag" content="数据结构">
+    
+      <meta property="article:tag" content="链表">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/87ac7349aa82b2f92615782ff2a05f61e2156864/pc-1.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/87ac7349aa82b2f92615782ff2a05f61e2156864/pc-1.png">
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/87ac7349aa82b2f92615782ff2a05f61e2156864/pc-1.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/87ac7349aa82b2f92615782ff2a05f61e2156864/pc-1.png">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>数据结构之单向链表</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://gitee.com/Edwardwmd/image-resource/raw/87ac7349aa82b2f92615782ff2a05f61e2156864/pc-1.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      数据结构之单向链表
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-04-30T00:00:00Z">
+        
+  
+  
+  
+  
+    30 四月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/java">Java</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  单向链表是链表的一种，其特点是链表的链接方向是单向的，对链表的访问要通过顺序读取从头部开始。链表是使用指针进行构造的列表，并且是由一个个结点组装起来的，因此又称为结点列表。</p>
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E5%8D%95%E9%93%BE%E8%A1%A8%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E5%8D%95%E9%93%BE%E8%A1%A8%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84.png" >
+  
+    </a>
+  
+  
+</div>
+
+<p>图中结构很清晰，一条链表是由多个节点通过指针next指向下一个节点串连而成的，每个节点中都包含了data域和next域，data的域作用是保存数据，next域则是作为指针指向下一个节点的地址，另外还有一个头指针节点head,它表示一个链表头，此节点data域无数据。当指针next=null时，链表终止下一个节点，最终返回的是next=null这个节点到链表头指针head节点长度的单向链表。</p>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E5%8D%95%E9%93%BE%E8%A1%A8%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E5%8D%95%E9%93%BE%E8%A1%A8%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84.png" >
+  
+    </a>
+  
+  
+</div>
+
+<h2 id="案例">案例</h2>
+<p>  下面我想通过一个简单案例来描述一个单向链表的结构及使用方式，这个案例也很简单，输出此案例旨在更好的理解单向链表的数据结构。通过单向链表实现水浒英雄人物增删改查的操作，不做过多的文字赘述，直接上代码，代码中附有更详细的注释。</p>
+<h5 id="一无序添加节点数据">一、无序添加节点（数据）</h5>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E9%93%BE%E8%A1%A8%E8%8A%82%E7%82%B9%E6%97%A0%E5%BA%8F%E6%B7%BB%E5%8A%A0.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E9%93%BE%E8%A1%A8%E8%8A%82%E7%82%B9%E6%97%A0%E5%BA%8F%E6%B7%BB%E5%8A%A0.png" >
+  
+    </a>
+  
+  
+</div>
+
+<ul>
+<li>首先需要在单链表中定义节点Node，节点中包含data域（存放对象的相关属性数据）和next域（指向下一个Node的指针）；</li>
+<li>通过Node创建一个head头，这个head中的data域不需要数据，另外需要定义一个临时辅助指针temp，令temp=head；</li>
+<li>对于被添加的（数据）节点node，当temp.next=null，表示终止当前单链表，否则继续指向下一个节点：temp=temp.next;</li>
+<li>当退出链表时，拿到最后一个数据：temp.next=node。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+ <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//创建链表
+</span><span style="color:#75715e"></span>        AtomSingleLinkedList list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomSingleLinkedList<span style="color:#f92672">();</span>
+        <span style="color:#75715e">//创建节点
+</span><span style="color:#75715e"></span>        HeroNode h1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;宋江&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;及时雨&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻天覆地&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;卢俊义&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;玉麒麟&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻江倒海&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h3 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;吴用&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;智多星&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;风卷残云&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h4 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;林冲&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;豹子头&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;千军万马&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">//打乱顺序的添加节点
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>h3<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>h1<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>h4<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>h2<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//显示数据
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">queryList</span><span style="color:#f92672">();</span>
+     
+        <span style="color:#75715e">/**
+</span><span style="color:#75715e">        * 打印结果：
+</span><span style="color:#75715e">        * HeroNode{number=3, name=&#39;吴用&#39;, nickName=&#39;智多星&#39;, skill=&#39;风卷残云&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=1, name=&#39;宋江&#39;, nickName=&#39;及时雨&#39;, skill=&#39;翻天覆地&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=4, name=&#39;林冲&#39;, nickName=&#39;豹子头&#39;, skill=&#39;千军万马&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=2, name=&#39;卢俊义&#39;, nickName=&#39;玉麒麟&#39;, skill=&#39;翻江倒海&#39;}
+</span><span style="color:#75715e">        */</span>
+ <span style="color:#f92672">}</span>
+
+ 
+ <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AtomSingleLinkedList</span> <span style="color:#f92672">{</span>
+     <span style="color:#75715e">//1、先创建一个头节点，头节点不存放数据,头节点不能乱动，否则后面无法查找链表
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> HeroNode head <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(-</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;&#34;</span><span style="color:#f92672">);</span>
+     
+      <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>HeroNode heroNode<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+         HeroNode temp <span style="color:#f92672">=</span> head<span style="color:#f92672">;</span>
+          <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">//说明找到链表最后一个节点,退出死循环
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">//如果未找到，temp指针的next向后移动
+</span><span style="color:#75715e"></span>            temp <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+         <span style="color:#f92672">}</span>
+        <span style="color:#75715e">//退出循环时，此时的temp指向了链表的最后一个节点
+</span><span style="color:#75715e"></span>        temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> heroNode<span style="color:#f92672">;</span>
+      <span style="color:#f92672">}</span>
+ <span style="color:#f92672">}</span>
+ 
+ <span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 定义一个HeroNode，每一个HeroNode就是一个节点，里面
+</span><span style="color:#75715e"> * 定义了英雄的属性数据
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">HeroNode</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> number<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> String name<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> String nickName<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> String skill<span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">public</span> HeroNode next<span style="color:#f92672">;</span>
+    
+    <span style="color:#75715e">//其他代码就不去写了。。。
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+       
+
+</code></pre></div><h5 id="二有序添加节点数据">二、有序添加节点（数据）</h5>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E9%93%BE%E8%A1%A8%E8%8A%82%E7%82%B9%E6%9C%89%E5%BA%8F%E6%B7%BB%E5%8A%A0.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E9%93%BE%E8%A1%A8%E8%8A%82%E7%82%B9%E6%9C%89%E5%BA%8F%E6%B7%BB%E5%8A%A0.png" >
+  
+    </a>
+  
+  
+</div>
+
+<ul>
+<li>首先需要在单链表中定义Node节点类，节点中包含data域（存放对象的相关属性数据）和next域（指向下一个Node的指针）</li>
+<li>通过Node创建一个head头，这个head不许要传参，另外需要定义一个临时辅助指针temp，用来存放head的下一个指向的节点</li>
+<li>满足单向链表排序添加数据的条件有以下几点：
+a、定义一个temp临时指针存放head节点 Node temp=head；
+b、对于新增的数据（节点）node,当temp.next=0时，则表示链表终止，当前要被添加的数据
+node会被移到temp的后面；
+c、当temp.next.num&gt;node.num时，说明待加入的节点在单链表中找到位置，则有：
+node.next=temp.next;
+temp.next=node
+d、当temp.next.node=node.num时，说明这个位置已经存在了一个一样的的数据，无需添加
+e、每次判断循环必须将指针指向下一个节点：temp=temp.next</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+ <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//创建链表
+</span><span style="color:#75715e"></span>        AtomSingleLinkedList list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomSingleLinkedList<span style="color:#f92672">();</span>
+        <span style="color:#75715e">//创建节点
+</span><span style="color:#75715e"></span>        HeroNode h1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;宋江&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;及时雨&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻天覆地&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;卢俊义&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;玉麒麟&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻江倒海&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h3 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;吴用&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;智多星&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;风卷残云&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h4 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;林冲&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;豹子头&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;千军万马&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">//打乱顺序的添加
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h3<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h1<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h4<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h2<span style="color:#f92672">);</span>
+     
+        <span style="color:#75715e">//显示数据
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">queryList</span><span style="color:#f92672">();</span>
+        <span style="color:#75715e">/**
+</span><span style="color:#75715e">        * 打印结果（发现即便是添加时是乱序的，但最终结果都是有序的排列）：
+</span><span style="color:#75715e">        * HeroNode{number=1, name=&#39;宋江&#39;, nickName=&#39;及时雨&#39;, skill=&#39;翻天覆地&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=2, name=&#39;卢俊义&#39;, nickName=&#39;玉麒麟&#39;, skill=&#39;翻江倒海&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=3, name=&#39;吴用&#39;, nickName=&#39;智多星&#39;, skill=&#39;风卷残云&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=4, name=&#39;林冲&#39;, nickName=&#39;豹子头&#39;, skill=&#39;千军万马&#39;}
+</span><span style="color:#75715e">        */</span>
+ <span style="color:#f92672">}</span>
+
+ <span style="color:#75715e">/**
+</span><span style="color:#75715e"> *有序添加数据
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>HeroNode heroNode<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        HeroNode temp <span style="color:#f92672">=</span> head<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+               <span style="color:#75715e">//没有数据，直接添加到head后
+</span><span style="color:#75715e"></span>                heroNode<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+                temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> heroNode<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+               <span style="color:#75715e">//说明要插入链表中的位置找到
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">number</span> <span style="color:#f92672">&gt;</span> heroNode<span style="color:#f92672">.</span><span style="color:#a6e22e">number</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#75715e">//先将heroNode的指针指向heroNode后面一个元素
+</span><span style="color:#75715e"></span>                heroNode<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+                <span style="color:#75715e">//然年后heroNode前面一个元素的指针指向heroNode
+</span><span style="color:#75715e"></span>                temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> heroNode<span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">number</span> <span style="color:#f92672">==</span> heroNode<span style="color:#f92672">.</span><span style="color:#a6e22e">number</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">print</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;当前水浒人物&#34;</span> <span style="color:#f92672">+</span> heroNode<span style="color:#f92672">.</span><span style="color:#a6e22e">name</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;已存在，无法再加入序列\n&#34;</span><span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#75715e">//指针下移
+</span><span style="color:#75715e"></span>            temp <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+</code></pre></div><h5 id="三根据序列号删除节点">三、根据序列号删除节点</h5>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E9%93%BE%E8%A1%A8%E5%88%A0%E9%99%A4.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/116f5724d70b5672bc6f9dbb85f5a6a6d2d850e6/%E9%93%BE%E8%A1%A8%E5%88%A0%E9%99%A4.png" >
+  
+    </a>
+  
+  
+</div>
+
+<ul>
+<li>同样需要一个临时指针temp(Node temp=head),当temp.next=null时，则说明链表中无可删除节点；</li>
+<li>当temp.next.num=num（需要删除的节点序号）时，此时令temp的指针指向下下个节点，即：temp.next=temp.next.next;这时直接跳过序号为num的节点来达到删除节点的目的，有人会问，没有被指向的那个num序号节点（被删除的这个节点）不会占内存吗？不会，<span class="highlight-text red">因为没有被指针next指向的节点是不可达对象（非GC Root对象）,最终会被GC回收！</span></li>
+<li>每做一个判断指针next必须下移：temp=temp.next。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//创建链表
+</span><span style="color:#75715e"></span>        AtomSingleLinkedList list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomSingleLinkedList<span style="color:#f92672">();</span>
+        <span style="color:#75715e">//创建节点
+</span><span style="color:#75715e"></span>        HeroNode h1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;宋江&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;及时雨&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻天覆地&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;卢俊义&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;玉麒麟&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻江倒海&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h3 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;吴用&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;智多星&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;风卷残云&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h4 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;林冲&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;豹子头&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;千军万马&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">//打乱顺序的添加
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h3<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h1<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h4<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h2<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//删除序号为2的节点
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">deleteByNum</span><span style="color:#f92672">(</span>2<span style="color:#f92672">);</span>
+     
+        <span style="color:#75715e">//显示数据
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">queryList</span><span style="color:#f92672">();</span>
+        <span style="color:#75715e">/**
+</span><span style="color:#75715e">        * 打印结果（序号为2的英雄被删除）：
+</span><span style="color:#75715e">        * HeroNode{number=1, name=&#39;宋江&#39;, nickName=&#39;及时雨&#39;, skill=&#39;翻天覆地&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=3, name=&#39;吴用&#39;, nickName=&#39;智多星&#39;, skill=&#39;风卷残云&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=4, name=&#39;林冲&#39;, nickName=&#39;豹子头&#39;, skill=&#39;千军万马&#39;}
+</span><span style="color:#75715e">        */</span>
+ <span style="color:#f92672">}</span>
+
+
+  <span style="color:#75715e">/**
+</span><span style="color:#75715e">  * 根据序号删除节点
+</span><span style="color:#75715e">  */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">deleteByNum</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> num<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        HeroNode temp <span style="color:#f92672">=</span> head<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;编号--%d的数据不存在，无法为您删除数据~&#34;</span><span style="color:#f92672">,</span>num<span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">number</span> <span style="color:#f92672">==</span> num<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>temp <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;  删除成功！！\n\n&#34;</span><span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            temp <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><h4 id="四修改数据">四、修改数据</h4>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/594157b81badd674643ff9c1e6e6ceb2b4a9717f/%E9%93%BE%E8%A1%A8%E4%BF%AE%E6%94%B9%E6%80%9D%E8%B7%AF.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/594157b81badd674643ff9c1e6e6ceb2b4a9717f/%E9%93%BE%E8%A1%A8%E4%BF%AE%E6%94%B9%E6%80%9D%E8%B7%AF.png" >
+  
+    </a>
+  
+  
+</div>
+
+<ul>
+<li>首先需要一个临时指针temp，令temp=head，当temp.next=null时，说明链表中没有数据，退出修改；</li>
+<li>对于传入的修改数据node,这里需要注意的是数据是根据序列号num来做修改的，当temp.next.num=node.num时，对temp.next中的数据进行修改，将node的数据赋值给temp.next中（序列号除外）；</li>
+<li>指针要下移，保证遍历可以正常进行，否则会出现死循环：temp=temp.next。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//创建链表
+</span><span style="color:#75715e"></span>        AtomSingleLinkedList list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomSingleLinkedList<span style="color:#f92672">();</span>
+        <span style="color:#75715e">//创建节点
+</span><span style="color:#75715e"></span>        HeroNode h1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;宋江&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;及时雨&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻天覆地&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;卢俊义&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;玉麒麟&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻江倒海&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h3 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;吴用&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;智多星&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;风卷残云&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h4 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;林冲&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;豹子头&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;千军万马&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">//打乱顺序的添加
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h3<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h1<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h4<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h2<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//删除序号为2的节点
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">updateNode</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;小卢&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;玉麒麟！！&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;天崩地裂&#34;</span><span style="color:#f92672">)</span> <span style="color:#f92672">);</span>
+     
+        <span style="color:#75715e">//显示数据
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">queryList</span><span style="color:#f92672">();</span>
+        <span style="color:#75715e">/**
+</span><span style="color:#75715e">        * 打印结果（序号为2的英雄被修改）：
+</span><span style="color:#75715e">        * HeroNode{number=1, name=&#39;宋江&#39;, nickName=&#39;及时雨&#39;, skill=&#39;翻天覆地&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=2, name=&#39;小卢&#39;, nickName=&#39;玉麒麟！！&#39;, skill=&#39;天崩地裂&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=3, name=&#39;吴用&#39;, nickName=&#39;智多星&#39;, skill=&#39;风卷残云&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=4, name=&#39;林冲&#39;, nickName=&#39;豹子头&#39;, skill=&#39;千军万马&#39;}
+</span><span style="color:#75715e">        */</span>
+ <span style="color:#f92672">}</span>
+
+ <span style="color:#75715e">/**
+</span><span style="color:#75715e"> *修改数据
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">updateNode</span><span style="color:#f92672">(</span>HeroNode updateNode<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        HeroNode temp <span style="color:#f92672">=</span> head<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;没有找到编号: %d\n&#34;</span><span style="color:#f92672">,</span> updateNode<span style="color:#f92672">.</span><span style="color:#a6e22e">number</span><span style="color:#f92672">);</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">number</span> <span style="color:#f92672">==</span> updateNode<span style="color:#f92672">.</span><span style="color:#a6e22e">number</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#75715e">//把需要修改的节点 temp.next的数据替换成updateNode的数据
+</span><span style="color:#75715e"></span>                temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">name</span> <span style="color:#f92672">=</span> updateNode<span style="color:#f92672">.</span><span style="color:#a6e22e">name</span><span style="color:#f92672">;</span>
+                temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">nickName</span> <span style="color:#f92672">=</span> updateNode<span style="color:#f92672">.</span><span style="color:#a6e22e">nickName</span><span style="color:#f92672">;</span>
+                temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">.</span><span style="color:#a6e22e">skill</span> <span style="color:#f92672">=</span> updateNode<span style="color:#f92672">.</span><span style="color:#a6e22e">skill</span><span style="color:#f92672">;</span>
+                <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#75715e">//指针下移
+</span><span style="color:#75715e"></span>            temp <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+
+</code></pre></div><h4 id="五查询数据">五、查询数据</h4>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/594157b81badd674643ff9c1e6e6ceb2b4a9717f/%E9%93%BE%E8%A1%A8%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/594157b81badd674643ff9c1e6e6ceb2b4a9717f/%E9%93%BE%E8%A1%A8%E6%9F%A5%E8%AF%A2%E6%95%B0%E6%8D%AE.png" >
+  
+    </a>
+  
+  
+</div>
+
+<ul>
+<li>同样需要一个临时变量temp,令temp=head.next，当temp=null时，终止链表，则表示无数据；</li>
+<li>当temp!=null时，在死循环中遍历temp,取出temp的值，指针要下移：temp=temp.next;当遍历到temp=null时退出死循环。</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//创建链表
+</span><span style="color:#75715e"></span>        AtomSingleLinkedList list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> AtomSingleLinkedList<span style="color:#f92672">();</span>
+        <span style="color:#75715e">//创建节点
+</span><span style="color:#75715e"></span>        HeroNode h1 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>1<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;宋江&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;及时雨&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻天覆地&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h2 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>2<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;卢俊义&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;玉麒麟&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;翻江倒海&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h3 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>3<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;吴用&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;智多星&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;风卷残云&#34;</span><span style="color:#f92672">);</span>
+        HeroNode h4 <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> HeroNode<span style="color:#f92672">(</span>4<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;林冲&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;豹子头&#34;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;千军万马&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">//打乱顺序的添加
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h3<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h1<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h4<span style="color:#f92672">);</span>
+        list<span style="color:#f92672">.</span><span style="color:#a6e22e">addOrderByNum</span><span style="color:#f92672">(</span>h2<span style="color:#f92672">);</span>
+     
+        <span style="color:#75715e">//显示数据
+</span><span style="color:#75715e"></span>        list<span style="color:#f92672">.</span><span style="color:#a6e22e">queryList</span><span style="color:#f92672">();</span>
+        <span style="color:#75715e">/**
+</span><span style="color:#75715e">        * 打印结果：
+</span><span style="color:#75715e">        * HeroNode{number=1, name=&#39;宋江&#39;, nickName=&#39;及时雨&#39;, skill=&#39;翻天覆地&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=2, name=&#39;卢俊义&#39;, nickName=&#39;玉麒麟&#39;, skill=&#39;翻江倒海&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=3, name=&#39;吴用&#39;, nickName=&#39;智多星&#39;, skill=&#39;风卷残云&#39;}
+</span><span style="color:#75715e">        * HeroNode{number=4, name=&#39;林冲&#39;, nickName=&#39;豹子头&#39;, skill=&#39;千军万马&#39;}
+</span><span style="color:#75715e">        */</span>
+ <span style="color:#f92672">}</span>
+
+
+
+<span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 显示链表中的数据
+</span><span style="color:#75715e"> */</span>
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">queryList</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">//因为head不可动
+</span><span style="color:#75715e"></span>    HeroNode temp <span style="color:#f92672">=</span> head<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>temp <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;当前链表为空，没数据可显示~~&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+   
+    <span style="color:#66d9ef">while</span> <span style="color:#f92672">(</span>temp <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//当temp指针指向null,则代表是最后一个节点，退出当前死循环
+</span><span style="color:#75715e"></span>        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span>temp<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//temp指针一定要后移，否则一直会处于死循环中
+</span><span style="color:#75715e"></span>        temp <span style="color:#f92672">=</span> temp<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/%E9%93%BE%E8%A1%A8/">链表</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/" data-tooltip="Android屏幕适配的那些事">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/" data-tooltip="Android屏幕适配的那些事">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B9%258B%25E5%258D%2595%25E5%2590%2591%25E9%2593%25BE%25E8%25A1%25A8%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B9%258B%25E5%258D%2595%25E5%2590%2591%25E9%2593%25BE%25E8%25A1%25A8%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%2595%25B0%25E6%258D%25AE%25E7%25BB%2593%25E6%259E%2584%25E4%25B9%258B%25E5%258D%2595%25E5%2590%2591%25E9%2593%25BE%25E8%25A1%25A8%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/04\/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8\/';
+          
+            this.page.identifier = '\/2021\/04\/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

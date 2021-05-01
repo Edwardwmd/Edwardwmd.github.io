@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="kotlin, singleton, design patterns, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  众所周知，单例模式是所有设计模式中最常运用且简单的设计模式，单例模式有多种写法（变种写法），自己归纳了六种写法：饿汉式、非线程安全懒汉式、线程安全懒汉式、DCL双重校验锁懒汉式、静态内部类懒汉式、枚举类式。">
+
+
+<meta property="og:description" content="  众所周知，单例模式是所有设计模式中最常运用且简单的设计模式，单例模式有多种写法（变种写法），自己归纳了六种写法：饿汉式、非线程安全懒汉式、线程安全懒汉式、DCL双重校验锁懒汉式、静态内部类懒汉式、枚举类式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="探索设计模式-单例模式">
+<meta name="twitter:title" content="探索设计模式-单例模式">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  众所周知，单例模式是所有设计模式中最常运用且简单的设计模式，单例模式有多种写法（变种写法），自己归纳了六种写法：饿汉式、非线程安全懒汉式、线程安全懒汉式、DCL双重校验锁懒汉式、静态内部类懒汉式、枚举类式。">
+<meta name="twitter:description" content="  众所周知，单例模式是所有设计模式中最常运用且简单的设计模式，单例模式有多种写法（变种写法），自己归纳了六种写法：饿汉式、非线程安全懒汉式、线程安全懒汉式、DCL双重校验锁懒汉式、静态内部类懒汉式、枚举类式。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-04-09T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-04-09T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="设计模式">
+    
+  
+  
+    
+      <meta property="article:tag" content="kotlin">
+    
+      <meta property="article:tag" content="singleton">
+    
+      <meta property="article:tag" content="design patterns">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://ongres.com/img/blog/63_node_eks_cluster-thumbnail.png">
+  <meta property="twitter:image" content="https://ongres.com/img/blog/63_node_eks_cluster-thumbnail.png">
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/5fe94383fbb7d1cc312153cbfc7e4860481a4089/Android-Tools-to-Help-Developers-v2.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/5fe94383fbb7d1cc312153cbfc7e4860481a4089/Android-Tools-to-Help-Developers-v2.png">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>探索设计模式-单例模式</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://gitee.com/Edwardwmd/image-resource/raw/5fe94383fbb7d1cc312153cbfc7e4860481a4089/Android-Tools-to-Help-Developers-v2.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      探索设计模式-单例模式
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-04-09T00:00:00Z">
+        
+  
+  
+  
+  
+    9 四月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f">设计模式</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  众所周知，单例模式是所有设计模式中最常运用且简单的设计模式，单例模式有多种写法（变种写法），自己归纳了六种写法：饿汉式、非线程安全懒汉式、线程安全懒汉式、DCL双重校验锁懒汉式、静态内部类懒汉式、枚举类式。</p>
+<p>下面，我们会使用Java和Kotlin两个开发环境下实现每一种单例模式。
+单例模式有以下几个特点：</p>
+<ul>
+<li>单例只能有一个实例</li>
+<li>单例必须自己创造自己的唯一实例</li>
+<li>单例必须提供全局的唯一实例</li>
+</ul>
+<p>在单线程中的案例介绍前，要着重解释下<span class="highlight-text red">立即加载</span> 和<span class="highlight-text red">延时加载</span> 的概念。</p>
+<ul>
+<li>立即加载：<span class="highlight-text green">在类加载初始化的时候就主动创建实例。</span></li>
+<li>延时加载：<span class="highlight-text green"> 等待使用时就去创建实例，不用则不创建 。 </span></li>
+</ul>
+<p>  在单线程环境下，单例模式根据实例化对象时机的不同，有两种经典的实现：一种是 <span class="highlight-text red"> 饿汉式单例(立即加载) </span>，一种是  <span class="highlight-text red">懒汉式单例(延迟加载)</span>。 <span class="highlight-text red">饿汉式单例在单例类被加载时候，就实例化一个对象并交给自己的引用；而懒汉式单例只有在真正使用的时候才会实例化一个对象并交给自己的引用。</span> 下面我们深入浅出的谈谈关于单例模式的几种写法，针对每种写法在日常开发中会对全局产生哪些深远的影响呢。</p>
+<hr>
+<h2 id="一饿汉式">一、饿汉式</h2>
+<h6 id="1kotlin环境下的饿汉式">1、Kotlin环境下的饿汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+     object Singleton{
+     
+      }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6 id="2java环境下的饿汉式">2、Java环境下的饿汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.java</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.java</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+     public class Singleton{
+         //单例模式构造方法必须是私有的
+         private Singleton{}
+         //通过私有的静态变量主动创建实例，实现立即加载
+         private static instance=new Singleton();
+         //通过静态方法暴露初始化单例的
+         public static Singleton:getInstance(){
+             return instance;
+         }
+     }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  我们知道类加载的方式是<span class="highlight-text red">按需加载，且加载一次。</span>因此，在上述单例类被加载时，就会实例化一个对象并交给自己的引用，供系统使用；而且，由于这个类在整个生命周期中只会被加载一次，因此只会创建一个实例，即能够充分保证单例。</p>
+<p>在多线程并发的条件下，有以下代码：</p>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+     fun main(){
+         /**
+         * 使用多线程并发初始化饿汉式单例
+          **/
+        val executor = Executors.newFixedThreadPool(20)
+              for (i in 0 until 10) {
+                 executor.submit {
+                   val hc1=SingletonFirst.getInstance().hashCode()
+                    Log.e(&#34;HashCode&#34;, &#34;$hc1&#34;, )
+                 }
+             }   
+         }
+
+       object Singleton{
+              fun getInstance():Singleton{
+                 return Singleton
+              }
+       }
+
+
+    /*HashCode均一致，表明这个实例是单一性的
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    *185572173
+    */
+</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  由上面代码可知，饿汉式单例是一个线程安全的单例模式，为什么这么说呢？因为饿汉式在初始化实例时，预先就由类加载器将类字节码文件传给JVM触发初始化操作，就会实例化一个对象并交给自己的引用，供系统使用。换句话说，在线程访问单例对象之前就已经创建好了。再加上，由于一个类在整个生命周期中只会被加载一次，因此该单例类只会创建一个实例，也就是说，线程每次都只能也必定只可以拿到这个唯一的对象。因此就说，饿汉式单例是线程安全的。</p>
+<hr>
+<h2 id="二传统懒汉式">二、传统懒汉式</h2>
+<h6 id="1kotlin环境下的传统懒汉式">1、kotlin环境下的传统懒汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+    class Singleton private constructor() {
+        companion object {
+            private var singleton: Singleton? = null
+                get() {
+                    if (field == null) {
+                        field = Singleton()
+                    }
+                    return field
+                }
+
+            fun get(): Singleton {
+                return singleton!!
+            }
+        }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6 id="2java环境下的传统懒汉式">2、Java环境下的传统懒汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.java</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.java</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+     public static class Singleton {
+     
+          private Singleton() {}
+    
+          private static Singleton instance = null;
+    
+          public static Singleton getInstance() {
+              if (instance == null) {
+                  instance = new Singleton();
+              }
+              return instance;
+          }
+       }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  我们从传统懒汉式单例可以看到，单例实例被延迟加载，即只有在真正使用的时候才会实例化一个对象并交给自己的引用。
+在多线程并发作用下，使用传统懒汉式有以下代码：</p>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+       fun main(){
+         /**
+         * 使用多线程并发初始化饿汉式单例
+                    **/
+                val executor = Executors.newFixedThreadPool(20)
+              for (i in 0 until 10) {
+                 executor.submit {
+                   val hc2=Singleton.getInstance().hashCode()
+                    Log.e(&#34;HashCode&#34;, &#34;$hc2&#34;, )
+                 }
+             }   
+                  }
+            class Singleton private constructor() {
+                   companion object {
+               private var singleton: Singleton? = null
+                  get() {
+                      if (field == null) {
+                          field = Singleton()
+                     }
+                      return field
+                  }
+
+               fun get(): Singleton {
+                   return singleton!!
+                }
+             }
+         }   
+         
+         /*HashCode不一致，无法保证实例的单一性
+         *189162108
+         *189162108
+         *189162108
+         *91296602
+         *91296602
+         *91296602
+         *189162108
+         *189162108
+         *91296602
+         *91296602
+         */
+</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  由上面代码可知，在多线程并发操作下，无法保证线程的单一性，究其原因是：<span class="highlight-text green">存在多个线程同时进入if (field == null) {...}（Kotlin环境下）或 if (singleton == null) {...}（Java环境下） 语句块中，在同一时间内多个线程可能无法对field == null判断，当某个时间点满足了field == null自然就不会重新创建实例。当这种这种情形发生后，该单例类就会创建出多个实例，违背单例模式的初衷。</span>因此，传统的懒汉式单例是非线程安全的，若想要使得传统的懒汉式单例变成线程安全，就需要对它进一步的改良和优化。</p>
+<hr>
+<h2 id="三线程安全懒汉式">三、线程安全懒汉式</h2>
+<p>  通过上面的非线程安全懒汉式，我们对其进一步的改良，通过在向外提供的静态方法块中添加一个同步锁Synchronized，以达到线程安全的目的。</p>
+<h6 id="1kotlin环境下的线程安全懒汉式">1、kotlin环境下的线程安全懒汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+          class Singleton private constructor() {
+             companion object {
+                 private var singleton: Singleton? = null
+                   get() {
+                       if (field == null) {
+                           field = Singleton()
+                       }
+                     return field
+                   }
+                   
+        //静态方法块中添加synchronized以保证线程安全
+         @Synchronized
+         fun get(): Singleton {
+                  return singleton!!
+             }
+         }
+</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6 id="2java环境下的线程安全懒汉式">2、Java环境下的线程安全懒汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.java</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.java</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+  public static class Singleton {
+
+       private Singleton() {}
+    
+      private static Singleton instance = null;
+      
+      //静态方法块中添加synchronized以保证线程安全
+      public static synchronized Singleton getInstance() {
+          if (instance == null) {
+              instance = new Singleton();
+          }
+           return instance;
+      }
+
+ }
+</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  那么它在多线程并发的时候代码如下：</p>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+
+  fun main(){
+         /**
+         * 使用多线程并发初始化饿汉式单例
+                    **/
+                val executor = Executors.newFixedThreadPool(20)
+              for (i in 0 until 10) {
+                 executor.submit {
+                   val hc3=Singleton.getInstance().hashCode()
+                    Log.e(&#34;HashCode&#34;, &#34;$hc3&#34;, )
+                 }
+             }   
+                  }
+            class Singleton private constructor() {
+                   companion object {
+               private var singleton: Singleton? = null
+                  get() {
+                      if (field == null) {
+                          field = Singleton()
+                     }
+                      return field
+                  }
+
+               @Synchronized
+               fun get(): Singleton {
+                   return singleton!!
+                }
+             }
+         }   
+         
+         /*HashCode一致，保证了实例的单一性
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         *118978655
+         */</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  由上面代码可知，通过在向外提供的get() or getInstance()方法块中添加Synchronized确实实现了线程安全，但这中方法有一个缺点，那就是当这个实例在多线程中实例化时，每次都要同步这个方法块中的代码，虽然保证了线程安全，但是去了效率，所以我们可以对其进一步的优化。</p>
+<hr>
+<h2 id="四dcl双重校验锁懒汉式">四、DCL双重校验锁懒汉式</h2>
+<p>  通过上一个例子我们已经知道，在方法块中添加同步锁Synchronized是可以保证线程安全的，但效率低，这次我们针对上一个案例做一个改良。</p>
+<h6 id="1kotlin环境下的dcl双重校验锁懒汉式">1、Kotlin环境下的DCL双重校验锁懒汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+      //第一种写法：
+      class Singleton private constructor() {
+
+           companion object {
+                  val instance: Singleton by lazy(mode =LazyThreadSafetyMode.SYNCHRONIZED) {
+                       Singleton()
+                 }
+             } 
+         }
+
+
+     //第二种写法：
+     class Singleton private constructor() {
+               @Volatile
+               private var instance: SingletonFourth? = null
+                   fun getInstance() = instance ?: synchronized(this) {
+                         instance ?: SingletonFourth().apply {
+                            instance = this
+                     }
+                }
+          }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6 id="2java环境下的dcl双重校验锁懒汉式">2、Java环境下的DCL双重校验锁懒汉式：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.java</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.java</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+      public static class Singleton {
+      
+               private SingletonFr() {}
+    
+               private volatile static Singleton instance = null;
+    
+               public  static Singleton getInstance() {
+                      if (instance == null) {
+                           synchronized (Singleton.class) {
+                               if (instance == null) {
+                                  instance = new Singleton();
+                               }
+                           }
+                       }
+                      return instance;
+               }
+          }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  通过上面代码可知，这次的改良是通过双锁实现线程安全，同时也保证了获取实例的高效性，为什么这么说呢？因为当这个实例在多线程并发下，首先走了 第一个锁if (instance == null) {&hellip;}代码块，当instance为null时直接进入第二个锁，第二个锁是初始化获取这个实例的代码块，于此同时使用一个同步锁，保证线程安全，当第二次在获取实例时就不走 if (instance == null) {&hellip;}代码块代码了，直接拿到之前初始化得到的实例，就不用每次进入同步代码块中获取实例，既保证了同步的同时又保证了获取实例的高效性。</p>
+<p>  这里需要另外提一句，在上面代码中，你会留意到静态变量加了一个<span class="highlight-text red">volatile</span>关键字，这个关键字是DCL双重校验锁的最终的改良点，它的作用是防止指令重排，避免在多线程并发执行时，无法完整的去获取实例而导致空指针的情况。</p>
+<p>  在 if (instance == null) {instance = new Singleton();}中的<span class="highlight-text red">new Singleton()</span>是非原子性操作，可能会创建一个不完整的实例，它会使得指令重排，一般的我们初始化对象的执行操作会分以下三步：</p>
+<ul>
+<li>a.分配对象内存空间。</li>
+<li>b.初始化对象。</li>
+<li>c.使得我们所初始化的对象（这里是Singleton对象）指向刚分配的内存地址。</li>
+</ul>
+<p>  <span class="highlight-text red">如果不使用volatile去修饰静态变量instance,这就会导致在多线程中执行时，可能是直接按照上面的指令顺序（a->b->c）执行的，这种情况下就可以完整的获取到实例；也有可能会将指令重排，变成a->c->b的顺序，这种情况下在DCL单例中，误以为是有一个实例指向了内存地址，所以就不会走第一个锁if (instance == null){...}，直接走return instance代码，而实际这个instance是空的，会报空指针异常。所以DCL双重校验锁中必须要使用volatile修饰。</span></p>
+<hr>
+<h2 id="五静态内部类懒汉式单例">五、静态内部类懒汉式单例</h2>
+<p>  上面几个是针对传统懒汉式进行很明显的改良与优化，那么这个静态内部类则是一个优秀的传统懒汉式的变种模式（我是这么认为的）。</p>
+<h6 id="1kotlin环境下的静态内部类懒汉式单例">1、Kotlin环境下的静态内部类懒汉式单例：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+         class Singleton private constructor() {
+         
+               private object SingletonHolder {
+                      var holder: Singleton = Singleton()
+               }
+    
+               companion object {
+                     fun getInstance(): Singleton {
+                         return SingletonHolder.holder
+                       }
+                }
+           }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6 id="2java环境下的静态内部类懒汉式单例">2、Java环境下的静态内部类懒汉式单例：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.java</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.java</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+          public static class Singleton{
+          
+                   private Singleton() {}
+    
+                   private static class SingletonHolder {
+                         private static Singleton holder = new Singleton();
+                    }
+    
+                    public static Singleton getInstance() {
+                            return SingletonHolder.holder;
+                    }
+    
+         }
+</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  为什么他是一个优秀的变种呢，首先，它是一个使用时就加载（懒加载），同时，私有内部中的实例对象按需加载，这样既保证了线程安全，更保证了获取实例的高效性，个人是很推荐这种方式的。</p>
+<hr>
+<h2 id="六枚举类式单例">六、枚举类式单例</h2>
+<h6 id="1kotlin环境下枚举类式单例">1、Kotlin环境下枚举类式单例：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+        enum class Singleton {
+               INSTANCE;
+        }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<h6 id="2java环境下枚举类式单例">2、Java环境下枚举类式单例：</h6>
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.java</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.java</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+         public  enum  Singleton {
+                 INSTANCE;
+         }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure>
+<p>  枚举与其他几个线程安全的懒汉式单例一样也实现了线程安全，另外，前面讲的几种单例都可以被<span class="highlight-text red">反射破坏</span>，但枚举类式的单例除外，具体怎么破坏以及解决方案具体如下：</p>
+<ul>
+<li>
+<p>反射破坏单例（这里拿线程安全单例做例子）：
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+          fun main(){
+               //1.通过线程安全懒汉式初始化获取单例
+               val single1 = Singleton.getInstance()
+               
+               //2.通过反射获取的对象实例
+               try {
+                    val constructor =SingletonFourth::class.java.getDeclaredConstructor()
+                     constructor.isAccessible = true
+                    //通过反射创建SingletonFourth对象
+                     val single2 = constructor.newInstance()
+                    //通过判断发现直接创建的对象和反射获取的对象不相等(违反了单例原则)
+                     Log.e(&#34;SingletonFragment&#34;, &#34;single2 ${if (single2 == single1) &#34;=&#34; else &#34;!=&#34;} single1&#34;)
+         
+            /**
+            *
+            * 得到的结果是：single2 ！= single1
+            *
+            **/
+            
+                } catch (e: Exception) {
+                     Log.e(&#34;SingletonFragment&#34;, e.message.toString())
+                }
+            }
+  
+  
+  ​       
+
+ *******************************我是分割线*******************************	    
+            
+            class Singleton private constructor() {
+             companion object {
+                 private var singleton: Singleton? = null
+                   get() {
+                       if (field == null) {
+                           field = Singleton()
+                       }
+                     return field
+                   }
+                   
+        //静态方法块中添加synchronized以保证线程安全
+         @Synchronized
+         fun get(): Singleton {
+                  return singleton!!
+             }
+         }</code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure></p>
+</li>
+<li>
+<p>解决反射破坏单例的方法：
+
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+
+
+<figure class="highlight java language-java">
+  <figcaption>
+    
+      <span>archives.kotlin</span><a href="http://underscorejs.org/#compact" target="_blank" rel="external">archives.kotlin</a>
+    
+  </figcaption>
+  <table>
+    <tbody>
+      <tr>
+        <td class="gutter">
+          <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre>
+        </td>
+        <td class="code">
+          <pre class="code-highlight language-java"><code class="java">
+               class Singleton private constructor() {
+             companion object {
+                 private var singleton: Singleton? = null
+                   get() {
+                       if (field == null) {
+                           field = Singleton()
+                       }
+                     return field
+                   }
+                   
+        //静态方法块中添加synchronized以保证线程安全
+         @Synchronized
+         fun get(): Singleton {
+         //加上判断instance是否为null,
+                if(instance!=null){
+                    throw RuntimeException(&#34;实例已存在，请通过get()获取实例！&#34;)
+                  }
+                  return singleton!!
+             }
+             
+         }
+
+ </code></pre>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</figure></p>
+</li>
+</ul>
+<p>  上面是kotlin的解决方法，Java的解决方法是在私有构造方法里面加上if(instance!=null{要抛出的异常}这句代码。</p>
+<hr>
+<h2 id="八小结">八、小结</h2>
+<p>  本文首先介绍了单例模式的定义和结构，并给出了其在单线程和多线程环境下的几种经典实现。特别地，我们知道，传统的饿汉式单例无论在单线程还是多线程环境下都是线程安全的，但是传统的懒汉式单例在多线程环境下是非线程安全的。当然，实现懒汉式单例还有其他方式。但是，这五种是比较经典的实现，也是我们应该掌握的几种实现方式。从这五种实现中，我们可以总结出，要想实现效率高的线程安全的单例，我们必须注意以下两点：</p>
+<ul>
+<li>
+<span class="highlight-text red">尽量减少同步块的作用域；</span>
+</li>
+<li>
+<span class="highlight-text red">尽量使用细粒度的锁。</span>
+</li>
+</ul>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/kotlin/">kotlin</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/singleton/">singleton</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/design-patterns/">design patterns</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" data-tooltip="关于Git  OpenSSL SSL_read: Connection was reset, errno 10054错误处理">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%B5%85%E6%9E%90okhttp%E6%BA%90%E7%A0%81%E6%8E%A2%E5%85%A5retrofit%E6%A0%B8%E5%BF%83/" data-tooltip="浅析OkHttp源码，探入Retrofit核心">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E5%85%B3%E4%BA%8Egit-openssl-ssl_read-connection-was-reset-errno-10054%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" data-tooltip="关于Git  OpenSSL SSL_read: Connection was reset, errno 10054错误处理">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%B5%85%E6%9E%90okhttp%E6%BA%90%E7%A0%81%E6%8E%A2%E5%85%A5retrofit%E6%A0%B8%E5%BF%83/" data-tooltip="浅析OkHttp源码，探入Retrofit核心">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%258E%25A2%25E7%25B4%25A2%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F-%25E5%258D%2595%25E4%25BE%258B%25E6%25A8%25A1%25E5%25BC%258F%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%258E%25A2%25E7%25B4%25A2%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F-%25E5%258D%2595%25E4%25BE%258B%25E6%25A8%25A1%25E5%25BC%258F%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%258E%25A2%25E7%25B4%25A2%25E8%25AE%25BE%25E8%25AE%25A1%25E6%25A8%25A1%25E5%25BC%258F-%25E5%258D%2595%25E4%25BE%258B%25E6%25A8%25A1%25E5%25BC%258F%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/04\/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F\/';
+          
+            this.page.identifier = '\/2021\/04\/%E6%8E%A2%E7%B4%A2%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

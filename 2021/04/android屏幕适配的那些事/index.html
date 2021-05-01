@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="屏幕适配, Android, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。">
+
+
+<meta property="og:description" content="  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android屏幕适配的那些事">
+<meta name="twitter:title" content="Android屏幕适配的那些事">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。">
+<meta name="twitter:description" content="  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-04-20T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-04-20T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Android">
+    
+  
+  
+    
+      <meta property="article:tag" content="屏幕适配">
+    
+      <meta property="article:tag" content="Android">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/b1f1197e6f8c85a77b99386436aef3ecf5588a26/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/b1f1197e6f8c85a77b99386436aef3ecf5588a26/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D.png">
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/e005c6fa3b3c4128abb2a53b3e7393f84de44b6c/ic_android_screen_adaptation.jpg">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/e005c6fa3b3c4128abb2a53b3e7393f84de44b6c/ic_android_screen_adaptation.jpg">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>Android屏幕适配的那些事</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://gitee.com/Edwardwmd/image-resource/raw/e005c6fa3b3c4128abb2a53b3e7393f84de44b6c/ic_android_screen_adaptation.jpg')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      Android屏幕适配的那些事
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-04-20T00:00:00Z">
+        
+  
+  
+  
+  
+    20 四月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/android">Android</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。</p>
+<p>  屏幕适配这个问题其实在开放过程中给人呈现出来的结果是矛盾的，你可以说它是个小问题，也可说它是你开发之路给你使绊子的问题，无论是Android也好，IOS也罢，大家或多或少会遇到相类似问题，正是因为这样的问题，亟待需要我们去解决和优化，所以，本人抱着学习的心态探讨关于Android屏幕适配方案这个问题，首先要说明一点的是，没有任何完美的解决方案，你只能在原有的方案对其进行优化，令它趋近于完美。
+  关于这个屏幕适配方案其实也是之前传的沸沸扬扬的今日头条解决方案，在此先感谢今日头条团队贡献出来的优秀方案。此前，也见证了不同的屏幕适配方案的崛起：</p>
+<ul>
+<li>简单的有Linearlayout的weight，但此方案中的所有布局只能依赖Linearlayout，一旦布局复杂，性能会变得非常差；</li>
+<li>google官方推荐的ConstraintLayout方案，是针对Linearlayout使用weight导致性能差的而提出解决方案，ConstraintLayout的百分比适配也做的不错，适配时性能优于Linearlayout，但不是最优的解决方案。</li>
+<li>鸿洋大神的百分比方案，此方案就是在项目中针对你所需要适配的手机屏幕的分辨率各自简历一个文件夹，这个方案虽然可以较好的适配屏幕，但一旦需要适配的手机屏幕分辨率多的话，所需要res中的values文件也变多，使得App臃肿，适配繁琐；</li>
+<li>鸿洋大神的AndroidAutoLayout，此方案是建立在百分比适配方案上进一步改良和优化的，这个方案支持自定义控件适配拓展，很强大的一个库，但入侵行较大，使用时需要继承AutoLayoutActivity，或者选择性的继承AutoLinearLayout、AutoRelativeLayout、AutoFrameLayout等实现适配工作，另外此方案不在维护了。</li>
+</ul>
+<p>在进行最优方案屏幕适配前，我们来讲讲关于屏幕的相关基础知识，在Android中引用了dp作为布局控件的适配单位，android中的dp在渲染前会将dp转为px，其计算公式为：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin">  density = dpi/<span style="color:#ae81ff">160</span>
+
+  px = dp*density
+  
+  px = dp*(dpi/<span style="color:#ae81ff">160</span>)
+
+</code></pre></div><p>而dpi是根据屏幕真实的分辨率和尺寸来计算的，每个设备都可能不一样的。通常情况下，一部手机的分辨率是宽x高，屏幕大小是以寸为单位，那么三者的关系是：</p>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/93af85628e9d0d82d4333356fcfa82e32c55b88b/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D-1.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/93af85628e9d0d82d4333356fcfa82e32c55b88b/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D-1.png" >
+  
+    </a>
+  
+  
+</div>
+
+<p>举个例子：屏幕分辨率为：1920*1080，屏幕尺寸为5吋的话，那么dpi为440。假设我们UI设计图是按屏幕宽度为360dp来设计的，那么在上述设备上，屏幕宽度其实为1080/(440/160)=392.7dp，也就是屏幕是比设计图要宽的。这种情况下， 即使使用dp也是无法在不同设备上显示为同样效果的。 同时还存在部分设备屏幕宽度不足360dp，这时就会导致按360dp宽度来开发实际显示不全的情况。而且上述屏幕尺寸、分辨率和像素密度的关系，很多设备并没有按此规则来实现， 因此dpi的值非常乱，没有规律可循，从而导致使用dp适配效果差强人意。</p>
+<p>/</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D/">屏幕适配</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/android/">Android</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/" data-tooltip="数据结构之单向链表">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/java-gc%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" data-tooltip="Java GC垃圾回收机制">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/" data-tooltip="数据结构之单向链表">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/java-gc%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" data-tooltip="Java GC垃圾回收机制">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2Fandroid%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E4%25BA%258B%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2Fandroid%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E4%25BA%258B%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2Fandroid%25E5%25B1%258F%25E5%25B9%2595%25E9%2580%2582%25E9%2585%258D%25E7%259A%2584%25E9%2582%25A3%25E4%25BA%259B%25E4%25BA%258B%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/04\/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B\/';
+          
+            this.page.identifier = '\/2021\/04\/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+
