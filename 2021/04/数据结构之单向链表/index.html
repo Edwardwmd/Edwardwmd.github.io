@@ -349,10 +349,10 @@
 </div>
 
 <ul>
-<li>首先需要在单链表中定义节点Node，节点中包含data域（存放对象的相关属性数据）和next域（指向下一个Node的指针）；</li>
-<li>通过Node创建一个head头，这个head中的data域不需要数据，另外需要定义一个临时辅助指针temp，令temp=head；</li>
-<li>对于被添加的（数据）节点node，当temp.next=null，表示终止当前单链表，否则继续指向下一个节点：temp=temp.next;</li>
-<li>当退出链表时，拿到最后一个数据：temp.next=node。</li>
+<li><span class="highlight-text green">首先需要在单链表中定义节点Node，节点中包含data域（存放对象的相关属性数据）和next域（指向下一个Node的指针）；</span></li>
+<li><span class="highlight-text green">通过Node创建一个head头，这个head中的data域不需要数据，另外需要定义一个临时辅助指针temp，令temp=head；</span></li>
+<li><span class="highlight-text green">对于被添加的（数据）节点node，当temp.next=null，表示终止当前单链表，否则继续指向下一个节点：temp=temp.next;</span></li>
+<li><span class="highlight-text green">当退出链表时，拿到最后一个数据：temp.next=node。</span></li>
 </ul>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
  <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
