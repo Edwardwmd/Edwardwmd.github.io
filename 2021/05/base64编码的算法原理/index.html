@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="Base64, Java, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  最近在深入的学习关于密码学的相关知识，因为密码学中涉及到了加密和解密，学习内容中穿插了关于Base64编码算法的问题。为此，我特地去了解了下关于Base64编码的算法。">
+
+
+<meta property="og:description" content="  最近在深入的学习关于密码学的相关知识，因为密码学中涉及到了加密和解密，学习内容中穿插了关于Base64编码算法的问题。为此，我特地去了解了下关于Base64编码的算法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Base64编码的算法原理">
+<meta name="twitter:title" content="Base64编码的算法原理">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  最近在深入的学习关于密码学的相关知识，因为密码学中涉及到了加密和解密，学习内容中穿插了关于Base64编码算法的问题。为此，我特地去了解了下关于Base64编码的算法。">
+<meta name="twitter:description" content="  最近在深入的学习关于密码学的相关知识，因为密码学中涉及到了加密和解密，学习内容中穿插了关于Base64编码算法的问题。为此，我特地去了解了下关于Base64编码的算法。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-05-27T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-05-27T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Base64">
+    
+  
+  
+    
+      <meta property="article:tag" content="Java">
+    
+      <meta property="article:tag" content="Base64">
+    
+      <meta property="article:tag" content="编码">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://lxlinux.superbed.verylink.top/item/5fb7e15fb18d62711312f41a.jpg">
+  <meta property="twitter:image" content="https://lxlinux.superbed.verylink.top/item/5fb7e15fb18d62711312f41a.jpg">
+
+
+  <meta property="og:image" content="https://1.bp.blogspot.com/-jcYkTjiZOmA/WAQ9L-ZtehI/AAAAAAAAHTU/Nq4ZPeSDtDc5n_ltoqzzRTF2vVqvWC5hwCLcB/s1600/What&#43;is&#43;Base64&#43;Encoding&#43;in&#43;Java.jpg">
+  <meta property="twitter:image" content="https://1.bp.blogspot.com/-jcYkTjiZOmA/WAQ9L-ZtehI/AAAAAAAAHTU/Nq4ZPeSDtDc5n_ltoqzzRTF2vVqvWC5hwCLcB/s1600/What&#43;is&#43;Base64&#43;Encoding&#43;in&#43;Java.jpg">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>Base64编码的算法原理</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://1.bp.blogspot.com/-jcYkTjiZOmA/WAQ9L-ZtehI/AAAAAAAAHTU/Nq4ZPeSDtDc5n_ltoqzzRTF2vVqvWC5hwCLcB/s1600/What&#43;is&#43;Base64&#43;Encoding&#43;in&#43;Java.jpg')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      Base64编码的算法原理
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-05-27T00:00:00Z">
+        
+  
+  
+  
+  
+    27 五月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/base64">Base64</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  最近在深入的学习关于密码学的相关知识，因为密码学中涉及到了加密和解密，学习内容中穿插了关于Base64编码算法的问题。为此，我特地去了解了下关于Base64编码的算法。</p>
+<p>关于Base64编码的概念，其实不必我做过多地解释了，这里就贴一下百科的解释：Base64是网络上最常见的用于传输8Bit字节码的编码方式之一，Base64就是一种基于64个可打印字符来表示二进制数据的方法。说白一点儿就是在数据加密和解密的过程中，就是把传输数据的每个字节映射成ASCII码表中的某些字符，这样在传输的过程中，就不会出现乱码的问题了。</p>
+<h3 id="一base64和加密解密算法是如何结合使用的的呢">一、Base64和加密解密算法是如何结合使用的的呢？</h3>
+<p>  这里我们拿DES对称性加密算法结合代码实现给大家看看,DES算法的入口参数有三个：Key、Data、Mode。其中Key为7个字节共56位（实际输入需要8个字节，因为java6对DES算法仅支持56位密钥长度，8个字节的话就是64位，多出的1个字节8位就拿来作为奇偶校验位），是DES算法的工作密钥；Data表示是要被加密或被解密的数据；Mode为DES的工作方式，有两种：加密或解密。</p>
+<p>①DES加密:</p>
+<p>  通过选择加密模式ENCRYPT_MODE以及定义加密的规则，在doFinal中传入需要经过Base64<code>加密</code>编码的的参数base64.encode(xxx)。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * DES加密
+</span><span style="color:#75715e">     * @param content 明文
+</span><span style="color:#75715e">     * @param desKey 公共密钥
+</span><span style="color:#75715e">     * @param algorithmType 加密的类型
+</span><span style="color:#75715e">     * @return 通过将明文加密后产生的密文
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> String <span style="color:#a6e22e">encryptDES</span><span style="color:#f92672">(</span>String content<span style="color:#f92672">,</span> String desKey<span style="color:#f92672">,</span> String algorithmType<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+             Base64 base64<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Base64<span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Cipher cipher <span style="color:#f92672">=</span> Cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span>algorithmType<span style="color:#f92672">);</span>
+            <span style="color:#75715e">//定义加密规则
+</span><span style="color:#75715e"></span>            SecretKeySpec Key <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SecretKeySpec<span style="color:#f92672">(</span>desKey<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(),</span> algorithmType<span style="color:#f92672">);</span>
+            <span style="color:#75715e">//加密：ENCRYPT_MODE
+</span><span style="color:#75715e"></span>            cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">init</span><span style="color:#f92672">(</span>Cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">ENCRYPT_MODE</span><span style="color:#f92672">,</span> Key<span style="color:#f92672">);</span>
+            <span style="color:#75715e">//要将传输的明文编码(base64.encode(content.getBytes()))
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes <span style="color:#f92672">=</span> cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">doFinal</span><span style="color:#f92672">(</span>base64<span style="color:#f92672">.</span><span style="color:#a6e22e">encode</span><span style="color:#f92672">(</span>content<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">()));</span>
+            <span style="color:#66d9ef">return</span> base64<span style="color:#f92672">.</span><span style="color:#a6e22e">encodeToString</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+</code></pre></div><p>我们可以执行案例，如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">//明文内容
+</span><span style="color:#75715e"></span>    String content <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;Kotlin 是最好使用的语言！！！&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#75715e">//DES密钥(加密和解密都使用同一个，密钥严格规定是8个字节（64位），否则报 Wrong key size的错误)
+</span><span style="color:#75715e"></span>    String desKey <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;25245621&#34;</span><span style="color:#f92672">;</span>
+    String algorithmType <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;DES&#34;</span><span style="color:#f92672">;</span>
+    
+   <span style="color:#75715e">//DES加密
+</span><span style="color:#75715e"></span>   String ciphertext <span style="color:#f92672">=</span> encryptDES<span style="color:#f92672">(</span>content<span style="color:#f92672">,</span> desKey<span style="color:#f92672">,</span> algorithmType<span style="color:#f92672">);</span>
+   System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;DES加密结果: &#34;</span> <span style="color:#f92672">+</span> ciphertext<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>    
+</code></pre></div><p>你会发现原来的明文文本内容通过DES加密后，会发现：</p>
+<pre><code class="language-linux" data-lang="linux">&gt; Task :DES.main()
+&gt; DES加密结果: IVklbaloTXNLCVRQrQJbjEF/kEpVh9FK/0VE5edkMFuHsHgxylGZS5SaVzFwYg/OsNNC0rd4Ydu6X7XsEDYKCw==
+
+</code></pre><p>②DES解密：</p>
+<p>  与加密相反，解密是通过选择解密模式ENCRYPT_MODE以及定义解密的规则，在doFinal中传入需要经过Base64<code>解密</code>编码的的参数base64.decode(xxx）。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> String <span style="color:#a6e22e">decryptDES</span><span style="color:#f92672">(</span>String ciphertext<span style="color:#f92672">,</span> String desKey<span style="color:#f92672">,</span> String algorithmType<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    Base64 base64<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Base64<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+        Cipher cipher <span style="color:#f92672">=</span> Cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">getInstance</span><span style="color:#f92672">(</span>algorithmType<span style="color:#f92672">);</span>
+        SecretKeySpec Key <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> SecretKeySpec<span style="color:#f92672">(</span>desKey<span style="color:#f92672">.</span><span style="color:#a6e22e">getBytes</span><span style="color:#f92672">(),</span> algorithmType<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//DECRYPT_MODE：解密
+</span><span style="color:#75715e"></span>        cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">init</span><span style="color:#f92672">(</span>Cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">DECRYPT_MODE</span><span style="color:#f92672">,</span> Key<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//要将解码的密文编码
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> bytes <span style="color:#f92672">=</span> cipher<span style="color:#f92672">.</span><span style="color:#a6e22e">doFinal</span><span style="color:#f92672">(</span>base64<span style="color:#f92672">.</span><span style="color:#a6e22e">decode</span><span style="color:#f92672">(</span>ciphertext<span style="color:#f92672">));</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> String<span style="color:#f92672">(</span>base64<span style="color:#f92672">.</span><span style="color:#a6e22e">decode</span><span style="color:#f92672">(</span>bytes<span style="color:#f92672">),</span> StandardCharsets<span style="color:#f92672">.</span><span style="color:#a6e22e">UTF_8</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>  由上面的明文，我们获取到了加密后的得到的密文ciphertext，然后通过此密文我们做进一步的解密的操作</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">main</span><span style="color:#f92672">(</span>String<span style="color:#f92672">[]</span> args<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">//此处省略其他代码
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">//DES加密
+</span><span style="color:#75715e"></span>    String ciphertext <span style="color:#f92672">=</span> encryptDES<span style="color:#f92672">(</span>content<span style="color:#f92672">,</span> desKey<span style="color:#f92672">,</span> algorithmType<span style="color:#f92672">);</span>
+
+    <span style="color:#75715e">//DES解密
+</span><span style="color:#75715e"></span>    String decryptText <span style="color:#f92672">=</span> decryptDES<span style="color:#f92672">(</span>ciphertext<span style="color:#f92672">,</span> desKey<span style="color:#f92672">,</span> algorithmType<span style="color:#f92672">);</span>
+
+    System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;DES加密结果: &#34;</span> <span style="color:#f92672">+</span> ciphertext <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;\n DES解密结果: &#34;</span> <span style="color:#f92672">+</span> decryptText<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>得到结果如下：</p>
+<pre><code class="language-linux" data-lang="linux">&gt; Task :DES.main()
+&gt; DES加密结果: IVklbaloTXNLCVRQrQJbjEF/kEpVh9FK/0VE5edkMFuHsHgxylGZS5SaVzFwYg/OsNNC0rd4Ydu6X7XsEDYKCw==
+&gt; DES解密结果: Kotlin 是最好使用的语言！！！
+</code></pre><p>  假设我们在加密环节中的doFinal中都去掉Base64的编码的代码，直接传入文本内容转换成的字节数组，其结果如下：</p>
+<pre><code class="language-linux" data-lang="linux">&gt; Task :DES.main()
+&gt; DES加密结果: ��:��{��1�4X��(�	��G���c��ra�_��c�dk��_���6�
+&gt; DES解密结果: null
+
+</code></pre><p>  通过上面的案例输出的结果，我们发现加密打印出来的结果是一堆乱码，无法让人读懂里面的内容，所以，Base64的本质并不是加密或解密所发，它只是使得加密或解密过程中通过将乱码映射成ASCII码表中的某些字符，令我们对结果更具易读性。</p>
+<h3 id="二base64的由来是什么它的算法原理是怎样的">二、Base64的由来是什么，它的算法原理是怎样的？</h3>
+<p>  首先，Base64编码中的“64”的很明显的由来是只支持64种不同可打印字符，这些字符在源码中可以查到，这一般情况下它的64个字符如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> STANDARD_ENCODE_TABLE <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#39;A&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;B&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;C&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;D&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;E&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;F&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;G&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;H&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;I&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;J&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;K&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;L&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;M&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;N&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;O&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;P&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;Q&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;R&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;S&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;T&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;U&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;V&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;W&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;X&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;Y&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;Z&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;b&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;c&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;d&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;e&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;f&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;g&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;h&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;i&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;j&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;k&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;l&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;m&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;n&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;o&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;p&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;q&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;r&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;s&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;t&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;u&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;v&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;w&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;x&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;y&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;z&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;0&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;1&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;2&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;3&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;4&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;5&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;6&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;7&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;8&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;9&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;+&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;/&#39;</span>
+<span style="color:#f92672">};</span>
+</code></pre></div><p>当时用的是URL-SAFE模式时，编码表中的最后两个字符会变成下面的样子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> URL_SAFE_ENCODE_TABLE <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
+        <span style="color:#e6db74">&#39;A&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;B&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;C&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;D&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;E&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;F&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;G&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;H&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;I&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;J&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;K&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;L&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;M&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;N&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;O&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;P&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;Q&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;R&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;S&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;T&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;U&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;V&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;W&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;X&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;Y&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;Z&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;a&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;b&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;c&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;d&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;e&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;f&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;g&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;h&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;i&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;j&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;k&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;l&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;m&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;n&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;o&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;p&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;q&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;r&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;s&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;t&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;u&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;v&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;w&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;x&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;y&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;z&#39;</span><span style="color:#f92672">,</span>
+        <span style="color:#e6db74">&#39;0&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;1&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;2&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;3&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;4&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;5&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;6&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;7&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;8&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;9&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;-&#39;</span><span style="color:#f92672">,</span> <span style="color:#e6db74">&#39;_&#39;</span>
+<span style="color:#f92672">};</span>
+</code></pre></div><p>  那它为什么是64个可打印字符呢，它的实现算法思路是怎样的呢？以下是我自己的理解，这也仅仅是我自己的个人理解：首先，我们知道正常的一个英文字符是一个字节（1个字节是8位），我们学习的中文的一个字符是两个字节组成的（2个字节是16位），就目前而言单个字符占用最大的字节是三个（3个字节是24位），所以Base64就拿最大的字节去分组 ，  即是分成 3 * 8=24（3个字节 * 单字节8位 = 24位），也就是可以通过二进制表示：00000000   00000000   00000000。因为前面我已经知道一个字符最大可占用3个字节，在不比这3个字节小的前提下，又进一步分组，因为24是8和6的最大公约数，所以分组结果是 4 * 6 = 24（4个字节 * 6 =24位），这里面我们发现一个字符是8位呀，怎么就变成6了呢，缺少的两位怎么半呀！很简单，缺少的两位就从高位补两个0，这样就满足一个字节8位的条件了。所以就有了表示二进制的方式：000000  000000  000000  000000，我们从这里面拿一组来说一下，最小值是（000000 min=0）,最大值是（111111  max=63）,所以Base64种每组是64种字符。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/java/">Java</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/base64/">Base64</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/%E7%BC%96%E7%A0%81/">编码</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/" data-tooltip="数据结构之单向链表">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B9%8B%E5%8D%95%E5%90%91%E9%93%BE%E8%A1%A8/" data-tooltip="数据结构之单向链表">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F05%2Fbase64%25E7%25BC%2596%25E7%25A0%2581%25E7%259A%2584%25E7%25AE%2597%25E6%25B3%2595%25E5%258E%259F%25E7%2590%2586%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F05%2Fbase64%25E7%25BC%2596%25E7%25A0%2581%25E7%259A%2584%25E7%25AE%2597%25E6%25B3%2595%25E5%258E%259F%25E7%2590%2586%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F05%2Fbase64%25E7%25BC%2596%25E7%25A0%2581%25E7%259A%2584%25E7%25AE%2597%25E6%25B3%2595%25E5%258E%259F%25E7%2590%2586%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/05\/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86\/';
+          
+            this.page.identifier = '\/2021\/05\/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+
