@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="ArrayList, 扩容机制, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  Java开发离不开数据结构，这篇文章总会在这着重的讲下我们在开发中尝试用的数据结构-ArrayList。">
+
+
+<meta property="og:description" content="  Java开发离不开数据结构，这篇文章总会在这着重的讲下我们在开发中尝试用的数据结构-ArrayList。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ArrayList扩容机制">
+<meta name="twitter:title" content="ArrayList扩容机制">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  Java开发离不开数据结构，这篇文章总会在这着重的讲下我们在开发中尝试用的数据结构-ArrayList。">
+<meta name="twitter:description" content="  Java开发离不开数据结构，这篇文章总会在这着重的讲下我们在开发中尝试用的数据结构-ArrayList。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-06-17T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-06-17T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="ArrayList">
+    
+      <meta property="article:section" content="Collection">
+    
+  
+  
+    
+      <meta property="article:tag" content="Java">
+    
+      <meta property="article:tag" content="ArrayList">
+    
+      <meta property="article:tag" content="扩容机制">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://java2blog.com/wp-content/uploads/2016/05/ArrayList.jpg">
+  <meta property="twitter:image" content="https://java2blog.com/wp-content/uploads/2016/05/ArrayList.jpg">
+
+
+  <meta property="og:image" content="https://cdn.booooooom.com/wp-content/uploads/2021/05/TrueWestRearick25.jpg">
+  <meta property="twitter:image" content="https://cdn.booooooom.com/wp-content/uploads/2021/05/TrueWestRearick25.jpg">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>ArrayList扩容机制</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://cdn.booooooom.com/wp-content/uploads/2021/05/TrueWestRearick25.jpg')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      ArrayList扩容机制
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-06-17T00:00:00Z">
+        
+  
+  
+  
+  
+    17 六月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/arraylist">ArrayList</a>, 
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/collection">Collection</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  Java开发离不开数据结构，这篇文章总会在这着重的讲下我们在开发中尝试用的数据结构-ArrayList。</p>
+<p>针对ArrayList，我会深入的探究关于它的扩容机制、线程安全问题以及为什么使用ArrayList而不使用数组等这些问题。首先，我们知道ArrayList是Collection的子类，而Collection是单列集合，所以ArrayList亦是如此。继承自 AbstractList，实现了 List 接口。底层基于数组实现容量大小动态变化。允许 null 的存在。同时还实现了 RandomAccess、Cloneable、Serializable 接口，所以ArrayList 是支持快速访问、复制、序列化的。</p>
+<h3 id="一emsp关于为什么使用arraylist而不使用数组">一、emsp;关于为什么使用ArrayList而不使用数组</h3>
+<p>  这个问题其实很好回答了：①数组需要<code>先定义好容量大小才可以添加数据</code>，一旦定义好的容量长度是固定的，后期无法动态修改，而ArrayList的容量是自动扩展的，灵活性更强。②ArrayList中实现了增、删、改的方法，支持快速访问等方法。</p>
+<h3 id="二arraylist线程安全问题">二、ArrayList线程安全问题</h3>
+<p>   ArrayList是线程不安全的集合类。为什么这么说，我们该怎样解决关于他线程不安全的问题呢？首先我们上代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 5000<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">())).</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+            System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ArrayList添加的元素个数--&gt; &#34;</span> <span style="color:#f92672">+</span> list<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+            
+ 输出结果<span style="color:#f92672">:</span> ArrayList添加的元素个数<span style="color:#f92672">--&gt;</span> 4999           
+</code></pre></div><p>   上面的结果显而易见，我们创建5000个线程并发操作，正常情况下ArrayList添加的元素个数应该是5000个，输出的结果是4999个，这个结果却与我们预期的结果不一致。所以，这就是多线程并发下导致数据不安全的结果，所以这就是我们为什么说ArrayList是线程不安全的原因了，点进ArrayList的源码，找到add()你会发现它并未加同步锁synchronized:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">
+<span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ensureCapacityInternal<span style="color:#f92672">(</span>size <span style="color:#f92672">+</span> 1<span style="color:#f92672">);</span>  <span style="color:#75715e">// Increments modCount!!
+</span><span style="color:#75715e"></span>        elementData<span style="color:#f92672">[</span>size<span style="color:#f92672">++]</span> <span style="color:#f92672">=</span> e<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>  前面已经说到，ArrayList之所以是线程不安全的，是因为未加同步锁，所以我们可以尝试用这个方法解决问题：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 5000<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>list<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">());</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}).</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ArrayList添加的元素个数--&gt; &#34;</span> <span style="color:#f92672">+</span> list<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+        
+输出结果:ArrayList添加的元素个数<span style="color:#f92672">--&gt;</span> 5000
+</code></pre></div><p>想要解决这个方法有很多种，不仅仅是这一种，譬如，我们可以使用Collections工具类将ArrayList转换成线程安全的集合类：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> ls <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+        List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list<span style="color:#f92672">=</span> Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">synchronizedList</span><span style="color:#f92672">(</span>ls<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 5000<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>list<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">());</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}).</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">sleep</span><span style="color:#f92672">(</span>1000<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>InterruptedException e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            e<span style="color:#f92672">.</span><span style="color:#a6e22e">printStackTrace</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ArrayList添加的元素个数--&gt; &#34;</span> <span style="color:#f92672">+</span> list<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+        
+输出结果:ArrayList添加的元素个数<span style="color:#f92672">--&gt;</span> 5000
+</code></pre></div><p>    或者使用其他线程安全的集合类，如Vector、CopyOnWriteArrayList等等，这里推荐使用CopyOnWriteArrayList，因为它的效率高的多，它的底层不是通过synchronized来保证线程安全的,而是通过Lock来保证线程安全的，我们在学习锁和线程同步安全的知识时就知道了，在相同的多个线程并发操作相同的共享数据时，synchronized是比Lock的效率要低的。</p>
+<h3 id="三arraylist扩容机制基于jdk18">三、ArrayList扩容机制(基于JDK1.8)</h3>
+<p>   在讲解扩容机制前，我们先把以下几个重要的结论放出来,这样可以方便大家前后对照：</p>
+<p>①ArrayList中维护了一个Object类型的数组elementData,即：Object[]elementData,添加的对象是所有类型，包括null。</p>
+<p>②当下创建ArrayList对象时，如果使用的是无参构造创建，那么elementData的初始容量为0，第一次添加时则elementData的容量扩展至10，如果超过容量10的添加量，则需再次扩展，则elementData容量扩展为1.5倍（自身容量的0.5倍）。</p>
+<p>③当下创建ArrayList对象时，如果使用指定容量大小的构造器，则elementData的容量初始大小为构造器中指定的大小数量，如需扩容，则elementData容量扩展为1.5倍（自身容量的0.5倍）。</p>
+<p>④数组扩容最终使用的是Arrays.copyOf(),在保证原有的数据情况下对原来数组进行扩容。</p>
+<p>  其实，无论ArrayList是通过无参构造创建集合还是通过构造方法中传入集合默认容量大小，最终的结果都会呈现出通过无参构造创建集合实现扩容机制的步骤。所以，这里直接拿无参构造创建ArrayList的样板来对它的扩容机制深入的学习。一般的，我们创建一个ArrayList的代码如下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> ls <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> ArrayList<span style="color:#f92672">&lt;&gt;();</span>
+</code></pre></div><p>点进源码，我们会发现：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">ArrayList</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">this</span><span style="color:#f92672">.</span><span style="color:#a6e22e">elementData</span> <span style="color:#f92672">=</span> DEFAULTCAPACITY_EMPTY_ELEMENTDATA<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+    
+    
+       <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> Object<span style="color:#f92672">[]</span> DEFAULTCAPACITY_EMPTY_ELEMENTDATA <span style="color:#f92672">=</span> <span style="color:#f92672">{};</span>
+</code></pre></div><p>  其实就是创建了一个空的Object[],而elementData就是我们真正实现增、删、改、查的数组，无参构造创建默认初始的容量就是0。
+  我们继续往下看，找到扩容的实现方法：add(E element):</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ensureCapacityInternal<span style="color:#f92672">(</span>size <span style="color:#f92672">+</span> 1<span style="color:#f92672">);</span>  <span style="color:#75715e">// Increments modCount!!
+</span><span style="color:#75715e"></span>        elementData<span style="color:#f92672">[</span>size<span style="color:#f92672">++]</span> <span style="color:#f92672">=</span> e<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>  我们会发现，当集合每添加一个元素进来时，数组的index就自增，而size就是ArrayList中的元素个数，而ensureCapacityInternal(size + 1)这个方法就是扩容的方法，我们点进去看一下：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ensureCapacityInternal</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> minCapacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        ensureExplicitCapacity<span style="color:#f92672">(</span>calculateCapacity<span style="color:#f92672">(</span>elementData<span style="color:#f92672">,</span> minCapacity<span style="color:#f92672">));</span>
+    <span style="color:#f92672">}</span>
+    
+<span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">calculateCapacity</span><span style="color:#f92672">(</span>Object<span style="color:#f92672">[]</span> elementData<span style="color:#f92672">,</span> <span style="color:#66d9ef">int</span> minCapacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>elementData <span style="color:#f92672">==</span> DEFAULTCAPACITY_EMPTY_ELEMENTDATA<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">return</span> Math<span style="color:#f92672">.</span><span style="color:#a6e22e">max</span><span style="color:#f92672">(</span>DEFAULT_CAPACITY<span style="color:#f92672">,</span> minCapacity<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">return</span> minCapacity<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>  看到calculateCapacit有两个参数，一个是ArrayList所维护的关键数组elementData和当前数组的容量minCapacity，ArrayList一开始创建时，它的容量minCapacity=0。calculateCapacit方法中还有一个参数DEFAULT_CAPACITY，点进发现：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> DEFAULT_CAPACITY <span style="color:#f92672">=</span> 10<span style="color:#f92672">;</span>
+</code></pre></div><p>没错，它的默认容量就是10，也就是说当我们使用无参构造创建ArrayList时，默认初始容量是0，首次扩容的容量大小是10。我们接着往下看：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">ensureExplicitCapacity</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> minCapacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        modCount<span style="color:#f92672">++;</span>
+        <span style="color:#75715e">// overflow-conscious code
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>minCapacity <span style="color:#f92672">-</span> elementData<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span>
+            grow<span style="color:#f92672">(</span>minCapacity<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>此时minCapacity=10，而 elementData.length还是0，所以，进入grow(minCapacity)：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">grow</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> minCapacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// overflow-conscious code
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">int</span> oldCapacity <span style="color:#f92672">=</span> elementData<span style="color:#f92672">.</span><span style="color:#a6e22e">length</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">int</span> newCapacity <span style="color:#f92672">=</span> oldCapacity <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>oldCapacity <span style="color:#f92672">&gt;&gt;</span> 1<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>newCapacity <span style="color:#f92672">-</span> minCapacity <span style="color:#f92672">&lt;</span> 0<span style="color:#f92672">)</span>
+            newCapacity <span style="color:#f92672">=</span> minCapacity<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>newCapacity <span style="color:#f92672">-</span> MAX_ARRAY_SIZE <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span>
+            newCapacity <span style="color:#f92672">=</span> hugeCapacity<span style="color:#f92672">(</span>minCapacity<span style="color:#f92672">);</span>
+        <span style="color:#75715e">// minCapacity is usually close to size, so this is a win:
+</span><span style="color:#75715e"></span>        elementData <span style="color:#f92672">=</span> Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">copyOf</span><span style="color:#f92672">(</span>elementData<span style="color:#f92672">,</span> newCapacity<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+</code></pre></div><p>  BingGo！到了grow()这个方法，说明我们已经深入到ArrayList扩容核心代码中了，上面我们已经分析了minCapacity的容量是10，oldCapacity在这里是0，实现扩容的算法： int newCapacity = oldCapacity + (oldCapacity &raquo; 1)，仔细发现是在原数组容量的前提下，扩展了原数组一半大小的容量（ oldCapacity &raquo; 1 相当于 oldCapacity÷2 ），这里使用位移实现的原因是因为计算机是通过二进制操作数据的，位移的实现比我们使用乘法或除法实现的效率更高。首次扩容的newCapacity大小也是为0，所以最终会将扩容的DEFAULT_CAPACITY通过rrays.copyOf(）复制进来，这个方法在保证原有数据不丢失的前提下进行扩容。
+  那我们会在何时执行第二次乃至第N次扩容呢？答案就是当我们添加的数据容量超过第一次扩容的容量大小为10的情况下，这时就会触发第二次扩容，扩容的大小按照：int newCapacity = oldCapacity + (oldCapacity &raquo; 1)实现，即：int newCapacity=10+10÷2
+也就是第二次会扩容到15，第三次扩容到22，第三次33&hellip;</p>
+<p>  下面，我将根据上面我们所学的一系列原理，写一个简单ArrayList：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">/**
+</span><span style="color:#75715e"> * 模拟数组的简单实现
+</span><span style="color:#75715e"> *
+</span><span style="color:#75715e"> * @param &lt;E&gt;
+</span><span style="color:#75715e"> */</span>
+<span style="color:#a6e22e">@SuppressWarnings</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;all&#34;</span><span style="color:#f92672">)</span>
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AtomArrayList</span><span style="color:#f92672">&lt;</span>E<span style="color:#f92672">&gt;</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">private</span> Object<span style="color:#f92672">[]</span> elementData<span style="color:#f92672">;</span>
+    <span style="color:#75715e">//默认空数组
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> Object<span style="color:#f92672">[]</span> EMPTY_DATA <span style="color:#f92672">=</span> <span style="color:#f92672">{};</span>
+    <span style="color:#75715e">//首次扩容默认的容量大小
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> Default_Capacity <span style="color:#f92672">=</span> 10<span style="color:#f92672">;</span>
+    <span style="color:#75715e">//元素个数
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">int</span> size <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+
+    <span style="color:#75715e">//刚创建的数据默认是空数组，默认初始容量为0
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">public</span> <span style="color:#a6e22e">AtomArrayList</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        elementData <span style="color:#f92672">=</span> EMPTY_DATA<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">//扩展容量
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> exCapacity <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#75715e">//临时记录扩展容量的变量
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">int</span> tempCapacity <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 添加数据
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * @param e 元素
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>E e<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//首次扩容先给容量10
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>size <span style="color:#f92672">&lt;</span> Default_Capacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            exCapacity <span style="color:#f92672">=</span> Default_Capacity<span style="color:#f92672">;</span>
+            tempCapacity <span style="color:#f92672">=</span> exCapacity<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">//第二次及以后扩容，其容量在原有容量的基础上再扩展原容量的0.5倍增长。
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>size <span style="color:#f92672">&gt;=</span> tempCapacity<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            exCapacity <span style="color:#f92672">=</span> tempCapacity <span style="color:#f92672">+</span> <span style="color:#f92672">(</span>tempCapacity <span style="color:#f92672">&gt;&gt;</span> 1<span style="color:#f92672">);</span>
+            tempCapacity <span style="color:#f92672">=</span> exCapacity<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">printf</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;集合当前的容量：%d \n&#34;</span><span style="color:#f92672">,</span> exCapacity<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//实现扩容的核心方法：在保留元素组的容量前提下，对元素组容量的一半进行复制，这样可以避免数组不会倍覆盖
+</span><span style="color:#75715e"></span>        elementData <span style="color:#f92672">=</span> Arrays<span style="color:#f92672">.</span><span style="color:#a6e22e">copyOf</span><span style="color:#f92672">(</span>elementData<span style="color:#f92672">,</span> exCapacity<span style="color:#f92672">);</span>
+        <span style="color:#75715e">//添加元素的同时，实现index自增
+</span><span style="color:#75715e"></span>        elementData<span style="color:#f92672">[</span>size<span style="color:#f92672">++]</span> <span style="color:#f92672">=</span> e<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 获取集合长度
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * @return 集合长度
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">int</span> <span style="color:#a6e22e">size</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> size<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 获取元素
+</span><span style="color:#75715e">     *
+</span><span style="color:#75715e">     * @param position 角标
+</span><span style="color:#75715e">     * @return 元素
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">public</span> E <span style="color:#a6e22e">get</span><span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> position<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">return</span> <span style="color:#f92672">(</span>E<span style="color:#f92672">)</span> elementData<span style="color:#f92672">[</span>position<span style="color:#f92672">];</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">/**
+</span><span style="color:#75715e">     * 清除所有元素
+</span><span style="color:#75715e">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">clear</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> size<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
+            elementData<span style="color:#f92672">[</span>i<span style="color:#f92672">]</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        size <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><p>使用的过程很简单，和我们使用ArrayList一样：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"> strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;张三&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;李四&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;赵五&#34;</span><span style="color:#f92672">);</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;添加数据后的集合长度：&#34;</span> <span style="color:#f92672">+</span> strS<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+        <span style="color:#75715e">//清除数据
+</span><span style="color:#75715e"></span>        strS<span style="color:#f92672">.</span><span style="color:#a6e22e">clear</span><span style="color:#f92672">();</span>
+        System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;清除数据后集合的长度：&#34;</span> <span style="color:#f92672">+</span> strS<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
+
+
+输出结果:
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:10 
+集合当前的容量:15 
+添加数据后的集合长度:11
+清除数据后集合的长度:0
+
+</code></pre></div>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/java/">Java</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/arraylist/">ArrayList</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">扩容机制</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/" data-tooltip="Base64编码的算法原理">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/05/base64%E7%BC%96%E7%A0%81%E7%9A%84%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86/" data-tooltip="Base64编码的算法原理">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F06%2Farraylist%25E6%2589%25A9%25E5%25AE%25B9%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F06%2Farraylist%25E6%2589%25A9%25E5%25AE%25B9%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F06%2Farraylist%25E6%2589%25A9%25E5%25AE%25B9%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/06\/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6\/';
+          
+            this.page.identifier = '\/2021\/06\/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+
