@@ -324,9 +324,7 @@ List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt
         List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt;</span> list<span style="color:#f92672">=</span> Collections<span style="color:#f92672">.</span><span style="color:#a6e22e">synchronizedList</span><span style="color:#f92672">(</span>ls<span style="color:#f92672">);</span>
         <span style="color:#66d9ef">for</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">int</span> i <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> i <span style="color:#f92672">&lt;</span> 5000<span style="color:#f92672">;</span> i<span style="color:#f92672">++)</span> <span style="color:#f92672">{</span>
             <span style="color:#66d9ef">new</span> Thread<span style="color:#f92672">(()</span> <span style="color:#f92672">-&gt;</span> <span style="color:#f92672">{</span>
-                <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>list<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
                     list<span style="color:#f92672">.</span><span style="color:#a6e22e">add</span><span style="color:#f92672">(</span>Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">());</span>
-                <span style="color:#f92672">}</span>
             <span style="color:#f92672">}).</span><span style="color:#a6e22e">start</span><span style="color:#f92672">();</span>
         <span style="color:#f92672">}</span>
         <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
