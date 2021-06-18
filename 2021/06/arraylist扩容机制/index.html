@@ -338,7 +338,31 @@ List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt
         
 输出结果:ArrayList添加的元素个数<span style="color:#f92672">--&gt;</span> 5000
 </code></pre></div><p>    或者使用其他线程安全的集合类，如Vector、CopyOnWriteArrayList等等，这里推荐使用CopyOnWriteArrayList，因为它的效率高的多，它的底层不是通过synchronized来保证线程安全的,而是通过Lock来保证线程安全的，我们在学习锁和线程同步安全的知识时就知道了，在相同的多个线程并发操作相同的共享数据时，synchronized是比Lock的效率要低的。对比结果如下图所示：</p>
-<p><img src="../../public/image/lock.png" alt=""></p>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://raw.githubusercontent.com/Edwardwmd/Edwardwmd.github.io/master/image/lock.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://raw.githubusercontent.com/Edwardwmd/Edwardwmd.github.io/master/image/lock.png" >
+  
+    </a>
+  
+  
+</div>
+
 <h3 id="三arraylist扩容机制基于jdk18">三、ArrayList扩容机制(基于JDK1.8)</h3>
 <p>   在讲解扩容机制前，我们先把以下几个重要的结论放出来,这样可以方便大家前后对照：</p>
 <p>①ArrayList中维护了一个Object类型的数组elementData,即：Object[]elementData,添加的对象是所有类型，包括null。</p>
