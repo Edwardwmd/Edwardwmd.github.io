@@ -319,7 +319,7 @@
 &gt; DES加密结果: IVklbaloTXNLCVRQrQJbjEF/kEpVh9FK/0VE5edkMFuHsHgxylGZS5SaVzFwYg/OsNNC0rd4Ydu6X7XsEDYKCw==
 
 </code></pre><p>②DES解密：</p>
-<p>  与加密相反，解密是通过选择解密模式ENCRYPT_MODE以及定义解密的规则，在doFinal中传入需要经过Base64<code>解密</code>编码的的参数base64.decode(xxx）。</p>
+<p>  与加密相反，解密是通过选择解密模式ENCRYPT_MODE以及定义解密的规则，在doFinal中传入需要经过Base64<code>解密</code>编码的的参数base64.decode(xxx)。</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> String <span style="color:#a6e22e">decryptDES</span><span style="color:#f92672">(</span>String ciphertext<span style="color:#f92672">,</span> String desKey<span style="color:#f92672">,</span> String algorithmType<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     Base64 base64<span style="color:#f92672">=</span><span style="color:#66d9ef">new</span> Base64<span style="color:#f92672">();</span>
     <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
@@ -356,7 +356,7 @@
 &gt; DES加密结果: ��:��{��1�4X��(�	��G���c��ra�_��c�dk��_���6�
 &gt; DES解密结果: null
 
-</code></pre><p>  通过上面的案例输出的结果，我们发现加密打印出来的结果是一堆乱码，无法让人读懂里面的内容，所以，Base64的本质并不是加密或解密所发，它只是使得加密或解密过程中通过将乱码映射成ASCII码表中的某些字符，令我们对结果更具易读性。</p>
+</code></pre><p>  通过上面的案例输出的结果，我们发现加密打印出来的结果是一堆乱码，无法让人读懂里面的内容，所以，Base64的本质并不是加密或解密算法，它只是使得加密或解密过程中通过将乱码映射成ASCII码表中的某些字符，令我们对结果更具易读性。</p>
 <h3 id="二base64的由来是什么它的算法原理是怎样的">二、Base64的由来是什么，它的算法原理是怎样的？</h3>
 <p>  首先，Base64编码中的“64”的很明显的由来是只支持64种不同可打印字符，这些字符在源码中可以查到，这一般情况下它的64个字符如下：</p>
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">byte</span><span style="color:#f92672">[]</span> STANDARD_ENCODE_TABLE <span style="color:#f92672">=</span> <span style="color:#f92672">{</span>
