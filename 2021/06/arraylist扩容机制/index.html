@@ -278,7 +278,7 @@
             <div class="main-content-wrap">
               <p>  Java开发离不开数据结构，这篇文章总会在这着重的讲下我们在开发中尝试用的数据结构-ArrayList。</p>
 <p>针对ArrayList，我会深入的探究关于它的扩容机制、线程安全问题以及为什么使用ArrayList而不使用数组等这些问题。首先，我们知道ArrayList是Collection的子类，而Collection是单列集合，所以ArrayList亦是如此。继承自 AbstractList，实现了 List 接口。底层基于数组实现容量大小动态变化。允许 null 的存在。同时还实现了 RandomAccess、Cloneable、Serializable 接口，所以ArrayList 是支持快速访问、复制、序列化的。</p>
-<h3 id="一emsp关于为什么使用arraylist而不使用数组">一、emsp;关于为什么使用ArrayList而不使用数组</h3>
+<h3 id="一关于为什么使用arraylist而不使用数组">一、关于为什么使用ArrayList而不使用数组</h3>
 <p>  这个问题其实很好回答了：①数组需要<code>先定义好容量大小才可以添加数据</code>，一旦定义好的容量长度是固定的，后期无法动态修改，而ArrayList的容量是自动扩展的，灵活性更强。②ArrayList中实现了增、删、改的方法，支持快速访问等方法。</p>
 <h3 id="二arraylist线程安全问题">二、ArrayList线程安全问题</h3>
 <p>   ArrayList是线程不安全的集合类。为什么这么说，我们该怎样解决关于他线程不安全的问题呢？首先我们上代码：</p>
@@ -337,7 +337,8 @@ List<span style="color:#f92672">&lt;</span>String<span style="color:#f92672">&gt
         System<span style="color:#f92672">.</span><span style="color:#a6e22e">out</span><span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;ArrayList添加的元素个数--&gt; &#34;</span> <span style="color:#f92672">+</span> list<span style="color:#f92672">.</span><span style="color:#a6e22e">size</span><span style="color:#f92672">());</span>
         
 输出结果:ArrayList添加的元素个数<span style="color:#f92672">--&gt;</span> 5000
-</code></pre></div><p>    或者使用其他线程安全的集合类，如Vector、CopyOnWriteArrayList等等，这里推荐使用CopyOnWriteArrayList，因为它的效率高的多，它的底层不是通过synchronized来保证线程安全的,而是通过Lock来保证线程安全的，我们在学习锁和线程同步安全的知识时就知道了，在相同的多个线程并发操作相同的共享数据时，synchronized是比Lock的效率要低的。</p>
+</code></pre></div><p>    或者使用其他线程安全的集合类，如Vector、CopyOnWriteArrayList等等，这里推荐使用CopyOnWriteArrayList，因为它的效率高的多，它的底层不是通过synchronized来保证线程安全的,而是通过Lock来保证线程安全的，我们在学习锁和线程同步安全的知识时就知道了，在相同的多个线程并发操作相同的共享数据时，synchronized是比Lock的效率要低的。对比结果如下图所示：</p>
+<p><img src="../../public/image/lock.png" alt=""></p>
 <h3 id="三arraylist扩容机制基于jdk18">三、ArrayList扩容机制(基于JDK1.8)</h3>
 <p>   在讲解扩容机制前，我们先把以下几个重要的结论放出来,这样可以方便大家前后对照：</p>
 <p>①ArrayList中维护了一个Object类型的数组elementData,即：Object[]elementData,添加的对象是所有类型，包括null。</p>
