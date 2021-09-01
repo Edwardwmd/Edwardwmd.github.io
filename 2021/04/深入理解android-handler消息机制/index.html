@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="okhttp, kotlin, java, retrofit, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="  OkHttp与Retrofit一样，同出一处，二者皆是极为优秀的开源框架，HTTP是现代应用程序网络的方式。">
+
+
+<meta property="og:description" content="  OkHttp与Retrofit一样，同出一处，二者皆是极为优秀的开源框架，HTTP是现代应用程序网络的方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Android Handler消息机制">
+<meta name="twitter:title" content="深入理解Android Handler消息机制">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="  OkHttp与Retrofit一样，同出一处，二者皆是极为优秀的开源框架，HTTP是现代应用程序网络的方式。">
+<meta name="twitter:description" content="  OkHttp与Retrofit一样，同出一处，二者皆是极为优秀的开源框架，HTTP是现代应用程序网络的方式。">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-04-09T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-04-09T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="OkHttp">
+    
+  
+  
+    
+      <meta property="article:tag" content="okHttp">
+    
+      <meta property="article:tag" content="retrofit">
+    
+      <meta property="article:tag" content="kotlin">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://miro.medium.com/max/4386/1*VHxp0L5J5yZQSVGAaKT-Og.png">
+  <meta property="twitter:image" content="https://miro.medium.com/max/4386/1*VHxp0L5J5yZQSVGAaKT-Og.png">
+
+
+  <meta property="og:image" content="https://miro.medium.com/max/3000/1*43i3BvSlB2zbGnLNEAnDSQ.png">
+  <meta property="twitter:image" content="https://miro.medium.com/max/3000/1*43i3BvSlB2zbGnLNEAnDSQ.png">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>深入理解Android Handler消息机制</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://miro.medium.com/max/3000/1*43i3BvSlB2zbGnLNEAnDSQ.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      深入理解Android Handler消息机制
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-04-09T00:00:00Z">
+        
+  
+  
+  
+  
+    9 四月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/okhttp">OkHttp</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  <a href="https://square.github.io/okhttp/">OkHttp</a>与<a href="https://square.github.io/retrofit/">Retrofit</a>一样，同出一处，二者皆是极为优秀的开源框架，HTTP是现代应用程序网络的方式。</p>
+<p>这就是我们交换数据和媒体的方式。有效地执行HTTP可以使您的内容加载更快并节省带宽。OkHttp是默认情况下有效的HTTP客户端：</p>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->HTTP / 2支持允许对同一主机的所有请求共享一个套接字。<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --> 连接池可减少请求延迟（如果HTTP / 2不可用）。<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --> 透明的GZIP缩小了下载大小。<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->响应缓存可以完全避免网络重复请求。<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<p>  当网络出现问题时，OkHttp会坚持不懈：它将从常见的连接问题中静默恢复。如果您的服务具有多个IP地址，则在第一次连接失败时，OkHttp将尝试使用备用地址。这对于IPv4 + IPv6和冗余数据中心中托管的服务是必需的。OkHttp支持现代TLS功能（TLS 1.3，ALPN，证书固定）。可以将其配置为回退以获得广泛的连接性。使用上手容易简单。它的请求/响应API具有流畅的构建器和不变性。它支持同步阻塞调用和带有回调的异步调用。</p>
+<h5 id="一-retrofit与okhttp的关系">一、 Retrofit与OkHttp的关系</h5>
+<p>  简单来说Retrofit是针对Java或Android基于OkHttp之上进一步的封装，Retrofit依赖于OkHttp，将网络请求的核心部分交给OkHttp执行，Retrofit使用注解方式，大大简化了我们的URL 拼写形式，而且注解含义一目了然，简单易懂; 支持多种文件格式解析（JSON,GSON,XML等); 实现强大的同步与异步执行，使得请求变得更易入手。</p>
+<h5 id="二okhttp核心源码解析">二、OkHttp核心源码解析</h5>
+<p>  在学习这些核心代码过程中,完全是以个人的角度及结合了一些官方文档、网络资料进行的，所以，有哪些地方解析有误，也望大家在评论中指出一二。言归正传，抛开OkHttp核心以外的方法，我们慢慢深入OkHttp网络请求核心的部分，其核心部分可以分三个点切入分析：</p>
+<ul>
+<li><!-- raw HTML omitted --> （Where）请求发送到哪里了 <!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --> （Who）请求被谁处理了<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --> （How） 请求是怎么维护的<!-- raw HTML omitted --></li>
+</ul>
+<p>  首先，来一个简单的网络请求的简单例子：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">MainActivity</span> : AppCompatActivity() {
+       <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onCreate</span>(savedInstanceState: Bundle?) {
+          <span style="color:#66d9ef">super</span>.onCreate(savedInstanceState)
+
+      <span style="color:#75715e">//构建OkHttpClient
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">val</span> client = OkHttpClient.Builder().build()
+      <span style="color:#75715e">//构建Request
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">val</span> request = Request.Builder().url(Api.BASE_URL).build()
+      <span style="color:#75715e">//创建Call接口对象
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">val</span> call = client.newCall(request)
+      <span style="color:#75715e">//异步请求
+</span><span style="color:#75715e"></span>      call.enqueue(<span style="color:#66d9ef">object</span>: Callback {
+          <span style="color:#75715e">//异步请求失败
+</span><span style="color:#75715e"></span>          <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onFailure</span>(call: Call, e: IOException) {
+              Log.e(<span style="color:#e6db74">&#34;FAIL&#34;</span>, <span style="color:#e6db74">&#34;请求失败----&gt;</span><span style="color:#e6db74">${e.message}</span><span style="color:#e6db74">&#34;</span>)
+          }
+    
+          <span style="color:#75715e">//异步请求成功
+</span><span style="color:#75715e"></span>          <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">onResponse</span>(call: Call, response: Response) {
+              Log.e(<span style="color:#e6db74">&#34;Success&#34;</span>, <span style="color:#e6db74">&#34;请求数据----&gt;</span><span style="color:#e6db74">${response.body}</span><span style="color:#e6db74">&#34;</span>)
+           }
+       })
+     }
+}
+</code></pre></div><p>  根据代码发现，通过<code>call</code>接口对象调用<code>enqueue()</code>入队的回调<code>Callback</code>实现的两个方法<code>（onFailure和onResponse）</code>中获取响应数据结果，所以核心的切入点是从<code>call.enqueue（Callback回调）</code>开始的。</p>
+<h5 id="1where请求发送到哪了">1、（Where）请求发送到哪了</h5>
+<p>  在上面的简单的例子中，我们发现请求是被送入队列中的，通过<code>call.enqueue（Callback回调）</code>入队，进入enqueue方法我们发现：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"><span style="color:#66d9ef">interface</span> <span style="color:#a6e22e">Call</span> : Cloneable {
+  <span style="color:#f92672">..</span>.
+  <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">enqueue</span>(responseCallback: Callback)
+  <span style="color:#f92672">..</span>.
+}
+</code></pre></div><p>  enqueue其实是<code>Call</code>接口定义需要实现的入队方法，那<code>Call</code>接口会在那里被实现呢，进一步入代码中我们发现，这个接口在<code>RealCall</code>中被实现：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-Kotlin" data-lang="Kotlin"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RealCall</span>(
+  <span style="color:#66d9ef">val</span> client: OkHttpClient,
+  <span style="color:#75715e">/** The application&#39;s original request unadulterated by redirects or auth headers. */</span>
+  <span style="color:#66d9ef">val</span> originalRequest: Request,
+  <span style="color:#66d9ef">val</span> forWebSocket: Boolean
+) : Call {
+  <span style="color:#f92672">..</span>.
+  <span style="color:#75715e">//请求进入队列
+</span><span style="color:#75715e"></span>  <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">enqueue</span>(responseCallback: Callback) {
+    check(executed.compareAndSet(<span style="color:#66d9ef">false</span>, <span style="color:#66d9ef">true</span>)) { <span style="color:#e6db74">&#34;Already Executed&#34;</span> }
+
+    callStart()
+    client.dispatcher.enqueue(AsyncCall(responseCallback))
+  }
+  <span style="color:#f92672">..</span>.
+}
+</code></pre></div><p>  不难发现请求发送到了Dispatcher中的入队方法中被处理了，进一步进入源码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">Dispatcher</span> <span style="color:#66d9ef">constructor</span>() {
+ <span style="color:#f92672">..</span>.
+  <span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">enqueue</span>(call: AsyncCall) {
+    synchronized(<span style="color:#66d9ef">this</span>) {
+    <span style="color:#75715e">//所有请求先添加到等待异步回调队列中
+</span><span style="color:#75715e"></span>      readyAsyncCalls.add(call)
+
+      <span style="color:#75715e">// Mutate the AsyncCall so that it shares the AtomicInteger of an existing running call to
+</span><span style="color:#75715e"></span>      <span style="color:#75715e">// the same host.
+</span><span style="color:#75715e"></span>      <span style="color:#66d9ef">if</span> (!call.call.forWebSocket) {
+        <span style="color:#66d9ef">val</span> existingCall = findExistingCallWithHost(call.host)
+        <span style="color:#66d9ef">if</span> (existingCall <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>) call.reuseCallsPerHostFrom(existingCall)
+      }
+    }
+    <span style="color:#75715e">//执行与促进
+</span><span style="color:#75715e"></span>    promoteAndExecute()
+  }
+ <span style="color:#f92672">..</span>.
+}  
+</code></pre></div><p>  首先在源码中我们看到了 <code>readyAsyncCalls.add(call)</code>,这个readyAsyncCalls表示等待异步回调队列（其实就是空数组双端队列，初始容纳16个元素）：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"> <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">val</span> runningAsyncCalls = ArrayDeque&lt;AsyncCall&gt;()
+</code></pre></div><p>  所有请求进入队直接就添加到readyAsyncCalls这个队列中等待，他的执行时机就是靠 promoteAndExecute()这个方法：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">promoteAndExecute</span>(): Boolean {
+    <span style="color:#66d9ef">this</span>.assertThreadDoesntHoldLock()
+
+    <span style="color:#66d9ef">val</span> executableCalls = mutableListOf&lt;AsyncCall&gt;()
+    <span style="color:#66d9ef">val</span> isRunning: Boolean
+    synchronized(<span style="color:#66d9ef">this</span>) {
+      <span style="color:#66d9ef">val</span> i = readyAsyncCalls.iterator()
+      <span style="color:#66d9ef">while</span> (i.hasNext()) {
+        <span style="color:#66d9ef">val</span> asyncCall = i.next()
+
+        <span style="color:#66d9ef">if</span> (runningAsyncCalls.size <span style="color:#f92672">&gt;=</span> <span style="color:#66d9ef">this</span>.maxRequests) <span style="color:#66d9ef">break</span> <span style="color:#75715e">// Max capacity.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> (asyncCall.callsPerHost.<span style="color:#66d9ef">get</span>() <span style="color:#f92672">&gt;=</span> <span style="color:#66d9ef">this</span>.maxRequestsPerHost) <span style="color:#66d9ef">continue</span> <span style="color:#75715e">// Host max capacity.
+</span><span style="color:#75715e"></span>
+        i.remove()
+        asyncCall.callsPerHost.incrementAndGet()
+        executableCalls.add(asyncCall)
+        runningAsyncCalls.add(asyncCall)
+      }
+      isRunning = runningCallsCount() &gt; <span style="color:#ae81ff">0</span>
+    }
+
+    <span style="color:#66d9ef">for</span> (i <span style="color:#66d9ef">in</span> <span style="color:#ae81ff">0</span> until executableCalls.size) {
+      <span style="color:#66d9ef">val</span> asyncCall = executableCalls[i]
+      asyncCall.executeOn(executorService)
+    }
+
+    <span style="color:#66d9ef">return</span> isRunning
+  }
+</code></pre></div><p>  在这方法中涉及到两个很重要的队列，一个是上面提到的等待异步回调队列readyAsyncCalls（下面以等待队列相称），另外一个是运行中异步回调队列runningAsyncCalls（下面以运行队列相称），在等待队列循环执行 while (i.hasNext())条件下，满足请求被添加到运行队列的必要条件是：运行队列中请求数必须小于maxRequests(64个)且每个主机请求数必须小于maxRequestsPerHost(5个)，当这些都不满足的情况下，请求会一直呆在等待队列中，直到运行队列中的请求逐个处理完成，然后等待队列中的请求也逐个被添加运行队列中执行。</p>
+<p>  所以根据源码，我们可总结出请求到底去哪了：所有的请求现进入了等待队列readyAsyncCalls，其次，运行队列runningAsyncCalls请求的个数小于64个且运行队列主机执行个数小于5个时，则请求会从等待队列readyAsyncCalls移出，放到运行队列runningAsyncCalls中执行，一按照这个条件直循环执行下去。</p>
+<h4 id="2who请求被谁处理了">2、（Who）请求被谁处理了</h4>
+<p>  我们前面结论的出请求被放到哪里执行了，那么我们现在来说说队列到底被谁执行了，上面的一句关键源码就是进入被谁处理的大门：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"> asyncCall.executeOn(executorService)
+</code></pre></div><p>  当请求在运行中队列时，将会在被添加到线程池中执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin">  <span style="color:#75715e">/**
+</span><span style="color:#75715e">  * ThreadPoolExecutor的参数
+</span><span style="color:#75715e">  * corePoolSize：保留在线程池中的核心线程数
+</span><span style="color:#75715e">  * maximumPoolSize：一个线程池中允许最大线程数(这里是Int.MAX_VALUE）
+</span><span style="color:#75715e">  * keepAliveTime：等待时长，当线程数大于CPU内核数时，是多余空闲线程终止之前等待新任务被执行的最大时长
+</span><span style="color:#75715e">  * unit：时间单位
+</span><span style="color:#75715e">  * workQueue：用于执行任务之前保留任务的队列
+</span><span style="color:#75715e">  * threadFactory：线程池工厂，用于创建线程，管理线程，避免频繁new Thread的工作
+</span><span style="color:#75715e">  */</span>
+  <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">var</span> executorServiceOrNull: ExecutorService? = <span style="color:#66d9ef">null</span>
+  <span style="color:#a6e22e">@get</span>:Synchronized
+  <span style="color:#a6e22e">@get</span>:JvmName(<span style="color:#e6db74">&#34;executorService&#34;</span>) <span style="color:#66d9ef">val</span> executorService: ExecutorService
+    <span style="color:#66d9ef">get</span>() {
+      <span style="color:#66d9ef">if</span> (executorServiceOrNull <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span>) {
+        executorServiceOrNull = ThreadPoolExecutor(<span style="color:#ae81ff">0</span>, Int.MAX_VALUE, <span style="color:#ae81ff">60</span>, TimeUnit.SECONDS,
+            SynchronousQueue(), threadFactory(<span style="color:#e6db74">&#34;</span><span style="color:#e6db74">$okHttpName</span><span style="color:#e6db74"> Dispatcher&#34;</span>, <span style="color:#66d9ef">false</span>))
+      }
+      <span style="color:#66d9ef">return</span> executorServiceOrNull<span style="color:#f92672">!!</span>
+    }
+
+</code></pre></div><p>  而执行这个线程池的方法是在<code>RealCall</code> 类中的的内部类<code>AsyncCall的executeOn</code>，AsyncCall同时中开启了一个线程<code>threadName(&quot;OkHttp ${redactedUrl()}&quot;)</code>执行请求：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"><span style="color:#66d9ef">class</span> <span style="color:#a6e22e">RealCall</span>(
+  <span style="color:#66d9ef">val</span> client: OkHttpClient,
+  <span style="color:#75715e">/** The application&#39;s original request unadulterated by redirects or auth headers. */</span>
+  <span style="color:#66d9ef">val</span> originalRequest: Request,
+  <span style="color:#66d9ef">val</span> forWebSocket: Boolean
+) : Call {
+
+<span style="color:#f92672">..</span>.
+
+  <span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">inner</span> <span style="color:#66d9ef">class</span> <span style="color:#a6e22e">AsyncCall</span>(
+     <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">val</span> responseCallback: Callback
+   ) : Runnable {
+     <span style="color:#a6e22e">@Volatile</span> <span style="color:#66d9ef">var</span> callsPerHost = AtomicInteger(<span style="color:#ae81ff">0</span>)
+       <span style="color:#66d9ef">private</span> <span style="color:#66d9ef">set</span>
+
+     <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">reuseCallsPerHostFrom</span>(other: AsyncCall) {
+       <span style="color:#66d9ef">this</span>.callsPerHost = other.callsPerHost
+     }
+
+     <span style="color:#66d9ef">val</span> host: String
+       <span style="color:#66d9ef">get</span>() = originalRequest.url.host
+ 
+     <span style="color:#66d9ef">val</span> request: Request
+         <span style="color:#66d9ef">get</span>() = originalRequest
+
+     <span style="color:#66d9ef">val</span> call: RealCall
+        <span style="color:#66d9ef">get</span>() = <span style="color:#66d9ef">this</span><span style="color:#a6e22e">@RealCall</span>
+
+     <span style="color:#75715e">/**
+</span><span style="color:#75715e">      * Attempt to enqueue this async call on [executorService]. This will attempt to  clean up
+</span><span style="color:#75715e">      * if the executor has been shut down by reporting the call as failed.
+</span><span style="color:#75715e">      */</span>
+     <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">executeOn</span>(executorService: ExecutorService) {
+       client.dispatcher.assertThreadDoesntHoldLock()
+
+       <span style="color:#66d9ef">var</span> success = <span style="color:#66d9ef">false</span>
+       <span style="color:#66d9ef">try</span> {
+         executorService.execute(<span style="color:#66d9ef">this</span>)
+         success = <span style="color:#66d9ef">true</span>
+       } <span style="color:#66d9ef">catch</span> (e: RejectedExecutionException) {
+         <span style="color:#66d9ef">val</span> ioException = InterruptedIOException(<span style="color:#e6db74">&#34;executor rejected&#34;</span>)
+        ioException.initCause(e)
+        noMoreExchanges(ioException)
+        responseCallback.onFailure(<span style="color:#66d9ef">this</span><span style="color:#a6e22e">@RealCall</span>, ioException)
+      } <span style="color:#66d9ef">finally</span> {
+        <span style="color:#66d9ef">if</span> (!success) {
+          client.dispatcher.finished(<span style="color:#66d9ef">this</span>) <span style="color:#75715e">// This call is no longer running!
+</span><span style="color:#75715e"></span>        }
+      }
+    }
+
+    <span style="color:#66d9ef">override</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">run</span>() {
+      threadName(<span style="color:#e6db74">&#34;OkHttp </span><span style="color:#e6db74">${redactedUrl()}</span><span style="color:#e6db74">&#34;</span>) {
+        <span style="color:#66d9ef">var</span> signalledCallback = <span style="color:#66d9ef">false</span>
+        timeout.enter()
+        <span style="color:#66d9ef">try</span> {
+          <span style="color:#66d9ef">val</span> response = getResponseWithInterceptorChain()
+          signalledCallback = <span style="color:#66d9ef">true</span>
+          responseCallback.onResponse(<span style="color:#66d9ef">this</span><span style="color:#a6e22e">@RealCall</span>, response)
+        } <span style="color:#66d9ef">catch</span> (e: IOException) {
+          <span style="color:#66d9ef">if</span> (signalledCallback) {
+            <span style="color:#75715e">// Do not signal the callback twice!
+</span><span style="color:#75715e"></span>            Platform.<span style="color:#66d9ef">get</span>().log(<span style="color:#e6db74">&#34;Callback failure for </span><span style="color:#e6db74">${toLoggableString()}</span><span style="color:#e6db74">&#34;</span>, Platform.INFO, e)
+          } <span style="color:#66d9ef">else</span> {
+            responseCallback.onFailure(<span style="color:#66d9ef">this</span><span style="color:#a6e22e">@RealCall</span>, e)
+          }
+        } <span style="color:#66d9ef">catch</span> (t: Throwable) {
+          cancel()
+          <span style="color:#66d9ef">if</span> (!signalledCallback) {
+            <span style="color:#66d9ef">val</span> canceledException = IOException(<span style="color:#e6db74">&#34;canceled due to </span><span style="color:#e6db74">$t</span><span style="color:#e6db74">&#34;</span>)
+            canceledException.addSuppressed(t)
+            responseCallback.onFailure(<span style="color:#66d9ef">this</span><span style="color:#a6e22e">@RealCall</span>, canceledException)
+          }
+          <span style="color:#66d9ef">throw</span> t
+        } <span style="color:#66d9ef">finally</span> {
+          client.dispatcher.finished(<span style="color:#66d9ef">this</span>)
+         }
+       }
+     }
+   }
+  <span style="color:#f92672">..</span>.
+}
+</code></pre></div><p>  在这一大段源码中我们发现了的响应<code>response</code>通过<code>getResponseWithInterceptorChain()</code>获取，这方法也是真正帮我们处理请求的地方：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin">
+  <span style="color:#a6e22e">@Throws</span>(IOException<span style="color:#f92672">::</span><span style="color:#66d9ef">class</span>)
+  <span style="color:#66d9ef">internal</span> <span style="color:#66d9ef">fun</span> <span style="color:#a6e22e">getResponseWithInterceptorChain</span>(): Response {
+    <span style="color:#75715e">// Build a full stack of interceptors.
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">val</span> interceptors = mutableListOf&lt;Interceptor&gt;()
+    interceptors <span style="color:#f92672">+=</span> client.interceptors
+    interceptors <span style="color:#f92672">+=</span> RetryAndFollowUpInterceptor(client)
+    interceptors <span style="color:#f92672">+=</span> BridgeInterceptor(client.cookieJar)
+    interceptors <span style="color:#f92672">+=</span> CacheInterceptor(client.cache)
+    interceptors <span style="color:#f92672">+=</span> ConnectInterceptor
+    <span style="color:#66d9ef">if</span> (!forWebSocket) {
+      interceptors <span style="color:#f92672">+=</span> client.networkInterceptors
+    }
+    interceptors <span style="color:#f92672">+=</span> CallServerInterceptor(forWebSocket)
+
+    <span style="color:#66d9ef">val</span> chain = RealInterceptorChain(
+        call = <span style="color:#66d9ef">this</span>,
+        interceptors = interceptors,
+        index = <span style="color:#ae81ff">0</span>,
+        exchange = <span style="color:#66d9ef">null</span>,
+        request = originalRequest,
+        connectTimeoutMillis = client.connectTimeoutMillis,
+        readTimeoutMillis = client.readTimeoutMillis,
+        writeTimeoutMillis = client.writeTimeoutMillis
+    )
+
+    <span style="color:#66d9ef">var</span> calledNoMoreExchanges = <span style="color:#66d9ef">false</span>
+    <span style="color:#66d9ef">try</span> {
+      <span style="color:#66d9ef">val</span> response = chain.proceed(originalRequest)
+      <span style="color:#66d9ef">if</span> (isCanceled()) {
+        response.closeQuietly()
+        <span style="color:#66d9ef">throw</span> IOException(<span style="color:#e6db74">&#34;Canceled&#34;</span>)
+      }
+      <span style="color:#66d9ef">return</span> response
+    } <span style="color:#66d9ef">catch</span> (e: IOException) {
+      calledNoMoreExchanges = <span style="color:#66d9ef">true</span>
+      <span style="color:#66d9ef">throw</span> noMoreExchanges(e) <span style="color:#66d9ef">as</span> Throwable
+    } <span style="color:#66d9ef">finally</span> {
+      <span style="color:#66d9ef">if</span> (!calledNoMoreExchanges) {
+        noMoreExchanges(<span style="color:#66d9ef">null</span>)
+      }
+    }
+  }
+
+</code></pre></div><p>  改源码内部通过拦截器责任链来处理请求，这里涉及到了责任链中多个拦截器：</p>
+<ul>
+<li>自定义拦截器（client.interceptors）：是通过addInterceptor()方法添加的自定义拦截器是一个不可变的拦截器</li>
+<li>重定向拦截器（RetryAndFollowUpInterceptor）：从故障中恢复，并按需要重定向</li>
+<li>桥接拦截器（BridgeInterceptor）：从应用程序代码到网络代码的桥梁，构建网络–&gt;呼叫网络–&gt;构+ 建网络响应</li>
+<li>缓存拦截器（CacheInterceptor）：服务来自缓存的请求，并将响应写入缓存</li>
+<li>连接拦截器（ConnectInterceptor）：打开与目标服务器的连接,然后进入下一个拦截器</li>
+<li>自定义拦截器（client.networkInterceptors）：此拦截器通过addNetworkInterceptor()方法添加进来的自定义拦截器，是一个不可变的拦截器</li>
+<li>读写拦截器 （CallServerInterceptor）：对服务器网络进行呼叫,对响应体执行读写操作</li>
+</ul>
+<p>当以上多个拦截器都满足条件，最终则可以获取响应结果。
+所以可总结出请求是被谁执行的：在运行队列中，请求会在线程池中开启一个<code>threadName(&quot;OkHttp ${redactedUrl()}&quot;)</code>的线程中执行，最终会通过拦截器责任链<code>getResponseWithInterceptorChain</code>中一步步被执行，获取响应结果。</p>
+<h4 id="3how请求是怎样维护的">3、（How）请求是怎样维护的</h4>
+<p>  通过前面，我们已经知道了请求发送到哪里和具体被哪个核心代码执行，那么请求是怎么被维护的呢，回到我们上面的代码中，我们会发现获取到响应结果后，最终会有这么一句代码会被执行：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"> client.dispatcher.finished(<span style="color:#66d9ef">this</span>)
+</code></pre></div><p>进入finished(xxx)会有以下源码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-kotlin" data-lang="kotlin"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">fun</span> &lt;<span style="color:#a6e22e">T</span>&gt; <span style="color:#a6e22e">finished</span>(calls: Deque&lt;T&gt;, call: T) {
+    <span style="color:#66d9ef">val</span> idleCallback: Runnable?
+    synchronized(<span style="color:#66d9ef">this</span>) {
+      <span style="color:#66d9ef">if</span> (!calls.remove(call)) <span style="color:#66d9ef">throw</span> AssertionError(<span style="color:#e6db74">&#34;Call wasn&#39;t in-flight!&#34;</span>)
+      idleCallback = <span style="color:#66d9ef">this</span>.idleCallback
+    }
+
+    <span style="color:#66d9ef">val</span> isRunning = promoteAndExecute()
+
+    <span style="color:#66d9ef">if</span> (<span style="color:#f92672">!is</span>Running <span style="color:#f92672">&amp;&amp;</span> idleCallback <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span>) {
+      idleCallback.run()
+    }
+  }
+</code></pre></div><p>  这里我们会发现有一个熟悉的代码<code>val isRunning = promoteAndExecute（）</code>,没错，就是请求循环回到队列中，执行着我们第2小节讲的请求发送到哪的那个节点里。实现了队列循环添加处理、等待请求的维护体系。</p>
+<h3 id="三总结">三、总结</h3>
+<p>  这篇文章旨在自己自学Android的心得，因为某些因素，自己已经停岗几年没做开发了，重新学习发现自己年纪也长了不少，新技术也迭代更新不少，或许无法和年轻小伙比，但学习永无止境，希望这篇浅析源码能给一些需要的人帮助吧。</p>
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/okhttp/">okHttp</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/retrofit/">retrofit</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/kotlin/">kotlin</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%B5%85%E6%9E%90okhttp%E6%BA%90%E7%A0%81%E6%8E%A2%E5%85%A5retrofit%E6%A0%B8%E5%BF%83/" data-tooltip="浅析OkHttp源码，探入Retrofit核心">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/04/%E6%B5%85%E6%9E%90okhttp%E6%BA%90%E7%A0%81%E6%8E%A2%E5%85%A5retrofit%E6%A0%B8%E5%BF%83/" data-tooltip="浅析OkHttp源码，探入Retrofit核心">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/04/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%25B7%25B1%25E5%2585%25A5%25E7%2590%2586%25E8%25A7%25A3android-handler%25E6%25B6%2588%25E6%2581%25AF%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%25B7%25B1%25E5%2585%25A5%25E7%2590%2586%25E8%25A7%25A3android-handler%25E6%25B6%2588%25E6%2581%25AF%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F04%2F%25E6%25B7%25B1%25E5%2585%25A5%25E7%2590%2586%25E8%25A7%25A3android-handler%25E6%25B6%2588%25E6%2581%25AF%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/04\/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6\/';
+          
+            this.page.identifier = '\/2021\/04\/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

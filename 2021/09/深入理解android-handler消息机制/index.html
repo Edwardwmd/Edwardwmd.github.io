@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="generator" content="Hugo 0.82.0 with theme Tranquilpeak 0.4.8-BETA">
+<meta name="author" content="EdwardWMD">
+<meta name="keywords" content="Handler, MessageQueue, kotlin, java, okhttp, retrofit, view, recycleview, adapter, base, activity, fragment, singleton, builder, service, socket, byte, dart, android, google, refresh, cpu, arouter, router, intent, bind, databinding, viewbinding, room, boot, package, manager, factory, reponsitory, loader, imageview, system, cardview, linearLayout, frameLayout, navigation, greendao, position, koin, dagger, rxjava, xml, shell, glide, mvp, mvc, mvvm, database, jetpack, ble">
+<meta name="description" content="Handler消息机制在Android有着非常重要的地位，与Binder的IPC机制一样，贯穿了整个Android系统。说到Handler，绝对是高频面试题，网上太多Blog里分析Handler机制，但不乏很多都是搬运别人文章直接转载发出来，将别人的理解照搬成自己的理解，所以我自己就想着写一篇关于Handler消息机制的文章，全文都是基于自己的理解，如有问题，尽情提出，大家可以抱着学习态度阅读此文。下面我们就带着几个问题就理解Handler消息机制。
+  ①Handler是什么？。 ②消息是怎么发送的，它的整个流程是什么？ ③Message是什么？它里面都有什么？ ④MessageQueue是什么？它和Message的关系是怎样的？ ⑤Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？ ⑥ThreadLocal是什么？HandlerThread是什么？       一、 Handler是什么  它是Android定义的一套线程间切换，特别是实现主线程和子线程切换的通讯机制，因为Android是强烈规定更新UI的线程为子线程，其他线程为子线程（分线程），耗时操作不建议在主线程上执行，这样会导致手机ANR(Application Not Responding),早期的ANR手机直接崩溃。
+二、消息是怎么发送的，它的整个流程是什么？  当一个消息被发送，调用Handler的sendMessage方法发送消息：  public final boolean sendMessage(@NonNull Message msg) { return sendMessageDelayed(msg, 0); }  消息进入消息队列：  private boolean enqueueMessage(@NonNull MessageQueue queue, @NonNull Message msg, long uptimeMillis) { msg.target = this; msg.workSourceUid = ThreadLocalWorkSource.getUid(); if (mAsynchronous) { msg.setAsynchronous(true); } return queue.enqueueMessage(msg, uptimeMillis); }   消息通过消息时延when的大小排队：
+boolean enqueueMessage(Message msg, long when) { if (msg.">
+
+
+<meta property="og:description" content="Handler消息机制在Android有着非常重要的地位，与Binder的IPC机制一样，贯穿了整个Android系统。说到Handler，绝对是高频面试题，网上太多Blog里分析Handler机制，但不乏很多都是搬运别人文章直接转载发出来，将别人的理解照搬成自己的理解，所以我自己就想着写一篇关于Handler消息机制的文章，全文都是基于自己的理解，如有问题，尽情提出，大家可以抱着学习态度阅读此文。下面我们就带着几个问题就理解Handler消息机制。
+  ①Handler是什么？。 ②消息是怎么发送的，它的整个流程是什么？ ③Message是什么？它里面都有什么？ ④MessageQueue是什么？它和Message的关系是怎样的？ ⑤Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？ ⑥ThreadLocal是什么？HandlerThread是什么？       一、 Handler是什么  它是Android定义的一套线程间切换，特别是实现主线程和子线程切换的通讯机制，因为Android是强烈规定更新UI的线程为子线程，其他线程为子线程（分线程），耗时操作不建议在主线程上执行，这样会导致手机ANR(Application Not Responding),早期的ANR手机直接崩溃。
+二、消息是怎么发送的，它的整个流程是什么？  当一个消息被发送，调用Handler的sendMessage方法发送消息：  public final boolean sendMessage(@NonNull Message msg) { return sendMessageDelayed(msg, 0); }  消息进入消息队列：  private boolean enqueueMessage(@NonNull MessageQueue queue, @NonNull Message msg, long uptimeMillis) { msg.target = this; msg.workSourceUid = ThreadLocalWorkSource.getUid(); if (mAsynchronous) { msg.setAsynchronous(true); } return queue.enqueueMessage(msg, uptimeMillis); }   消息通过消息时延when的大小排队：
+boolean enqueueMessage(Message msg, long when) { if (msg.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Android Handler消息机制">
+<meta name="twitter:title" content="深入理解Android Handler消息机制">
+<meta property="og:url" content="https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+<meta property="twitter:url" content="https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+<meta property="og:site_name" content="">
+<meta property="og:description" content="Handler消息机制在Android有着非常重要的地位，与Binder的IPC机制一样，贯穿了整个Android系统。说到Handler，绝对是高频面试题，网上太多Blog里分析Handler机制，但不乏很多都是搬运别人文章直接转载发出来，将别人的理解照搬成自己的理解，所以我自己就想着写一篇关于Handler消息机制的文章，全文都是基于自己的理解，如有问题，尽情提出，大家可以抱着学习态度阅读此文。下面我们就带着几个问题就理解Handler消息机制。
+  ①Handler是什么？。 ②消息是怎么发送的，它的整个流程是什么？ ③Message是什么？它里面都有什么？ ④MessageQueue是什么？它和Message的关系是怎样的？ ⑤Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？ ⑥ThreadLocal是什么？HandlerThread是什么？       一、 Handler是什么  它是Android定义的一套线程间切换，特别是实现主线程和子线程切换的通讯机制，因为Android是强烈规定更新UI的线程为子线程，其他线程为子线程（分线程），耗时操作不建议在主线程上执行，这样会导致手机ANR(Application Not Responding),早期的ANR手机直接崩溃。
+二、消息是怎么发送的，它的整个流程是什么？  当一个消息被发送，调用Handler的sendMessage方法发送消息：  public final boolean sendMessage(@NonNull Message msg) { return sendMessageDelayed(msg, 0); }  消息进入消息队列：  private boolean enqueueMessage(@NonNull MessageQueue queue, @NonNull Message msg, long uptimeMillis) { msg.target = this; msg.workSourceUid = ThreadLocalWorkSource.getUid(); if (mAsynchronous) { msg.setAsynchronous(true); } return queue.enqueueMessage(msg, uptimeMillis); }   消息通过消息时延when的大小排队：
+boolean enqueueMessage(Message msg, long when) { if (msg.">
+<meta name="twitter:description" content="Handler消息机制在Android有着非常重要的地位，与Binder的IPC机制一样，贯穿了整个Android系统。说到Handler，绝对是高频面试题，网上太多Blog里分析Handler机制，但不乏很多都是搬运别人文章直接转载发出来，将别人的理解照搬成自己的理解，所以我自己就想着写一篇关于Handler消息机制的文章，全文都是基于自己的理解，如有问题，尽情提出，大家可以抱着学习态度阅读此文。下面我们就带着几个问题就理解Handler消息机制。
+  ①Handler是什么？。 ②消息是怎么发送的，它的整个流程是什么？ ③Message是什么？它里面都有什么？ ④MessageQueue是什么？它和Message的关系是怎样的？ ⑤Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？ ⑥ThreadLocal是什么？HandlerThread是什么？       一、 Handler是什么  它是Android定义的一套线程间切换，特别是实现主线程和子线程切换的通讯机制，因为Android是强烈规定更新UI的线程为子线程，其他线程为子线程（分线程），耗时操作不建议在主线程上执行，这样会导致手机ANR(Application Not Responding),早期的ANR手机直接崩溃。
+二、消息是怎么发送的，它的整个流程是什么？  当一个消息被发送，调用Handler的sendMessage方法发送消息：  public final boolean sendMessage(@NonNull Message msg) { return sendMessageDelayed(msg, 0); }  消息进入消息队列：  private boolean enqueueMessage(@NonNull MessageQueue queue, @NonNull Message msg, long uptimeMillis) { msg.target = this; msg.workSourceUid = ThreadLocalWorkSource.getUid(); if (mAsynchronous) { msg.setAsynchronous(true); } return queue.enqueueMessage(msg, uptimeMillis); }   消息通过消息时延when的大小排队：
+boolean enqueueMessage(Message msg, long when) { if (msg.">
+<meta property="og:locale" content="zh-cn">
+
+  
+    <meta property="article:published_time" content="2021-09-01T00:00:00">
+  
+  
+    <meta property="article:modified_time" content="2021-09-01T00:00:00">
+  
+  
+  
+    
+      <meta property="article:section" content="Android">
+    
+      <meta property="article:section" content="Handler">
+    
+  
+  
+    
+      <meta property="article:tag" content="Android">
+    
+      <meta property="article:tag" content="Handler">
+    
+      <meta property="article:tag" content="Message">
+    
+      <meta property="article:tag" content="MessageQueue">
+    
+      <meta property="article:tag" content="Looper">
+    
+      <meta property="article:tag" content="ActivityThread">
+    
+  
+
+
+<meta name="twitter:card" content="summary">
+
+
+
+
+
+
+
+  <meta property="og:image" content="https://gitee.com/Edwardwmd/image-resource/raw/057f3336630f1b8083039825cacad3121a2fd667/handler_loop.png">
+  <meta property="twitter:image" content="https://gitee.com/Edwardwmd/image-resource/raw/057f3336630f1b8083039825cacad3121a2fd667/handler_loop.png">
+
+
+  <meta property="og:image" content="https://miro.medium.com/max/3000/1*43i3BvSlB2zbGnLNEAnDSQ.png">
+  <meta property="twitter:image" content="https://miro.medium.com/max/3000/1*43i3BvSlB2zbGnLNEAnDSQ.png">
+
+
+
+
+  <meta property="og:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+  <meta property="twitter:image" content="https://avatars.githubusercontent.com/u/20928578?v=4">
+
+
+    <title>深入理解Android Handler消息机制</title>
+
+    <link rel="icon" href="https://Edwardwmd.github.io/favicon.png">
+    
+
+    
+
+    <link rel="canonical" href="https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/jquery.fancybox.min.css" integrity="sha256-vuXZ9LGmmwtjqFX1F+EKin1ThZMub58gKULUyf0qECk=" crossorigin="anonymous" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.4/helpers/jquery.fancybox-thumbs.min.css" integrity="sha256-SEa4XYAHihTcEP1f5gARTB2K26Uk8PsndQYHQC1f4jU=" crossorigin="anonymous" />
+    
+    
+    <link rel="stylesheet" href="https://Edwardwmd.github.io/css/style-twzjdbqhmnnacqs0pwwdzcdbt8yhv8giawvjqjmyfoqnvazl0dalmnhdkvp7.min.css" />
+    
+    
+
+    
+      
+    
+    
+  </head>
+
+  <body>
+    <div id="blog">
+      <header id="header" data-behavior="4">
+  <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+  <div class="header-title">
+    <a class="header-title-link" href="https://Edwardwmd.github.io/"></a>
+  </div>
+  
+    
+      <a class="header-right-icon open-algolia-search"
+         href="https://www.baidu.com/" target="_blank" rel="noopener">
+    
+    
+      <i class="fa fa-lg fa-search"></i>
+    
+    
+    </a>
+  
+</header>
+
+      <nav id="sidebar" data-behavior="4">
+  <div class="sidebar-container">
+    
+      <div class="sidebar-profile">
+        <a href="https://Edwardwmd.github.io/#about">
+          <img class="sidebar-profile-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+        </a>
+        <h4 class="sidebar-profile-name">EdwardWMD</h4>
+        
+          <h5 class="sidebar-profile-bio">持之以恒，便可稀土掘金~</h5>
+        
+      </div>
+    
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-home"></i>
+      
+      <span class="sidebar-button-desc">首页</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/categories">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-bookmark"></i>
+      
+      <span class="sidebar-button-desc">分类</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/tags">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-tags"></i>
+      
+      <span class="sidebar-button-desc">标签</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/archives">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-archive"></i>
+      
+      <span class="sidebar-button-desc">归档</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/#about">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-question"></i>
+      
+      <span class="sidebar-button-desc">关于</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://github.com/Edwardwmd" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-github"></i>
+      
+      <span class="sidebar-button-desc">GitHub</span>
+    </a>
+  </li>
+
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://stackoverflow.com/users/9141471/wu-edward" target="_blank" rel="noopener">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-stack-overflow"></i>
+      
+      <span class="sidebar-button-desc">Stack Overflow</span>
+    </a>
+  </li>
+
+
+    </ul>
+    <ul class="sidebar-buttons">
+      
+  <li class="sidebar-button">
+    
+      <a class="sidebar-button-link " href="https://Edwardwmd.github.io/index.xml">
+    
+      <i class="sidebar-button-icon fa fa-lg fa-rss"></i>
+      
+      <span class="sidebar-button-desc">RSS</span>
+    </a>
+  </li>
+
+
+    </ul>
+  </div>
+</nav>
+
+      
+  <div class="post-header-cover
+              text-center
+              "
+       style="background-image:url('https://miro.medium.com/max/3000/1*43i3BvSlB2zbGnLNEAnDSQ.png')"
+       data-behavior="4">
+    
+      <div class="post-header main-content-wrap text-center">
+  
+    <h1 class="post-title" itemprop="headline">
+      深入理解Android Handler消息机制
+    </h1>
+  
+  
+  <div class="postShorten-meta post-meta">
+    
+      <time itemprop="datePublished" datetime="2021-09-01T00:00:00Z">
+        
+  
+  
+  
+  
+    1 九月 2021
+  
+
+      </time>
+    
+    
+  
+  
+    <span>发布在</span>
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/android">Android</a>, 
+    
+      <a class="category-link" href="https://Edwardwmd.github.io/categories/handler">Handler</a>
+    
+  
+
+  </div>
+
+</div>
+    
+  </div>
+
+
+      <div id="main" data-behavior="4"
+        class="hasCover
+               hasCoverMetaIn
+               ">
+        <article class="post" itemscope itemType="http://schema.org/BlogPosting">
+          
+          
+          <div class="post-content markdown" itemprop="articleBody">
+            <div class="main-content-wrap">
+              <p>  Handler消息机制在Android有着非常重要的地位，与Binder的IPC机制一样，贯穿了整个Android系统。说到Handler，绝对是高频面试题，网上太多Blog里分析Handler机制，但不乏很多都是搬运别人文章直接转载发出来，将别人的理解照搬成自己的理解，所以我自己就想着写一篇关于Handler消息机制的文章，全文都是基于自己的理解，如有问题，尽情提出，大家可以抱着学习态度阅读此文。下面我们就带着几个问题就理解Handler消息机制。</p>
+<blockquote>
+<ul>
+<li><!-- raw HTML omitted -->①Handler是什么？。<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --> ②消息是怎么发送的，它的整个流程是什么？<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted --> ③Message是什么？它里面都有什么？<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->④MessageQueue是什么？它和Message的关系是怎样的？<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->⑤Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？<!-- raw HTML omitted --></li>
+<li><!-- raw HTML omitted -->⑥ThreadLocal是什么？HandlerThread是什么？<!-- raw HTML omitted --></li>
+</ul>
+</blockquote>
+<hr>
+
+
+ 
+  
+  
+  
+  
+    
+  
+    
+      
+    
+  
+
+<div class="figure fig-100" >
+  
+    <a class="fancybox" href="https://gitee.com/Edwardwmd/image-resource/raw/90fed36c0bf9961c7a17ba0a15ab6c9b88ebac38/Handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6.png" data-fancybox-group="">
+  
+    <img class="fig-img" src="https://gitee.com/Edwardwmd/image-resource/raw/90fed36c0bf9961c7a17ba0a15ab6c9b88ebac38/Handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6.png" >
+  
+    </a>
+  
+  
+</div>
+
+<hr>
+<h5 id="一-handler是什么">一、 Handler是什么</h5>
+<p>  它是Android定义的一套线程间切换，特别是实现主线程和子线程切换的通讯机制，因为Android是强烈规定更新UI的线程为子线程，其他线程为子线程（分线程），耗时操作不建议在主线程上执行，这样会导致手机<strong>ANR</strong>(Application Not Responding),早期的ANR手机直接崩溃。</p>
+<h5 id="二消息是怎么发送的它的整个流程是什么">二、消息是怎么发送的，它的整个流程是什么？</h5>
+<ul>
+<li>当一个消息被发送，调用Handler的sendMessage方法发送消息：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">sendMessage</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@NonNull</span> Message msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> sendMessageDelayed<span style="color:#f92672">(</span>msg<span style="color:#f92672">,</span> 0<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><ul>
+<li>消息进入消息队列：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">enqueueMessage</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@NonNull</span> MessageQueue queue<span style="color:#f92672">,</span> <span style="color:#a6e22e">@NonNull</span> Message msg<span style="color:#f92672">,</span>
+        <span style="color:#66d9ef">long</span> uptimeMillis<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">this</span><span style="color:#f92672">;</span>
+    msg<span style="color:#f92672">.</span><span style="color:#a6e22e">workSourceUid</span> <span style="color:#f92672">=</span> ThreadLocalWorkSource<span style="color:#f92672">.</span><span style="color:#a6e22e">getUid</span><span style="color:#f92672">();</span>
+
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>mAsynchronous<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        msg<span style="color:#f92672">.</span><span style="color:#a6e22e">setAsynchronous</span><span style="color:#f92672">(</span><span style="color:#66d9ef">true</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> queue<span style="color:#f92672">.</span><span style="color:#a6e22e">enqueueMessage</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">,</span> uptimeMillis<span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><ul>
+<li>
+<p>消息通过消息时延when的大小排队：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">boolean</span> <span style="color:#a6e22e">enqueueMessage</span><span style="color:#f92672">(</span>Message msg<span style="color:#f92672">,</span> <span style="color:#66d9ef">long</span> when<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalArgumentException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Message must have a target.&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+  
+    <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span><span style="color:#66d9ef">this</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">isInUse</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalStateException<span style="color:#f92672">(</span>msg <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; This message is already in use.&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+  
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>mQuitting<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            IllegalStateException e <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> IllegalStateException<span style="color:#f92672">(</span>
+                    msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; sending message to a Handler on a dead thread&#34;</span><span style="color:#f92672">);</span>
+            Log<span style="color:#f92672">.</span><span style="color:#a6e22e">w</span><span style="color:#f92672">(</span>TAG<span style="color:#f92672">,</span> e<span style="color:#f92672">.</span><span style="color:#a6e22e">getMessage</span><span style="color:#f92672">(),</span> e<span style="color:#f92672">);</span>
+            msg<span style="color:#f92672">.</span><span style="color:#a6e22e">recycle</span><span style="color:#f92672">();</span>
+            <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+  
+        msg<span style="color:#f92672">.</span><span style="color:#a6e22e">markInUse</span><span style="color:#f92672">();</span>
+        msg<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span> <span style="color:#f92672">=</span> when<span style="color:#f92672">;</span>
+        Message p <span style="color:#f92672">=</span> mMessages<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">boolean</span> needWake<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>p <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> when <span style="color:#f92672">==</span> 0 <span style="color:#f92672">||</span> when <span style="color:#f92672">&lt;</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// New head, wake up the event queue if blocked.
+</span><span style="color:#75715e"></span>            msg<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> p<span style="color:#f92672">;</span>
+            mMessages <span style="color:#f92672">=</span> msg<span style="color:#f92672">;</span>
+            needWake <span style="color:#f92672">=</span> mBlocked<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// Inserted within the middle of the queue.  Usually we don&#39;t have to wake
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// up the event queue unless there is a barrier at the head of the queue
+</span><span style="color:#75715e"></span>            <span style="color:#75715e">// and the message is the earliest asynchronous message in the queue.
+</span><span style="color:#75715e"></span>            needWake <span style="color:#f92672">=</span> mBlocked <span style="color:#f92672">&amp;&amp;</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span> <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">&amp;&amp;</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">isAsynchronous</span><span style="color:#f92672">();</span>
+            Message prev<span style="color:#f92672">;</span>
+            <span style="color:#66d9ef">for</span> <span style="color:#f92672">(;;)</span> <span style="color:#f92672">{</span>
+                prev <span style="color:#f92672">=</span> p<span style="color:#f92672">;</span>
+                p <span style="color:#f92672">=</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+                <span style="color:#75715e">//消息通过when排队
+</span><span style="color:#75715e"></span>                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>p <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span> <span style="color:#f92672">||</span> when <span style="color:#f92672">&lt;</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    <span style="color:#66d9ef">break</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>needWake <span style="color:#f92672">&amp;&amp;</span> p<span style="color:#f92672">.</span><span style="color:#a6e22e">isAsynchronous</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+                    needWake <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+            msg<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> p<span style="color:#f92672">;</span> <span style="color:#75715e">// invariant: p == prev.next
+</span><span style="color:#75715e"></span>            prev<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> msg<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+  
+        <span style="color:#75715e">// We can assume mPtr != 0 because mQuitting is false.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>needWake<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            nativeWake<span style="color:#f92672">(</span>mPtr<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+<span style="color:#f92672">}</span>
+</code></pre></div></li>
+<li>
+<p>Looper通过loop()循环取消息：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">loop</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">final</span> Looper me <span style="color:#f92672">=</span> myLooper<span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>me <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> RuntimeException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;No Looper; Looper.prepare() wasn&#39;t called on this thread.&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>me<span style="color:#f92672">.</span><span style="color:#a6e22e">mInLoop</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        Slog<span style="color:#f92672">.</span><span style="color:#a6e22e">w</span><span style="color:#f92672">(</span>TAG<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Loop again would have the queued messages be executed&#34;</span>
+                <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; before this one completed.&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+  
+    me<span style="color:#f92672">.</span><span style="color:#a6e22e">mInLoop</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+    <span style="color:#66d9ef">final</span> MessageQueue queue <span style="color:#f92672">=</span> me<span style="color:#f92672">.</span><span style="color:#a6e22e">mQueue</span><span style="color:#f92672">;</span>
+  
+    <span style="color:#75715e">// Make sure the identity of this thread is that of the local process,
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// and keep track of what that identity token actually is.
+</span><span style="color:#75715e"></span>    Binder<span style="color:#f92672">.</span><span style="color:#a6e22e">clearCallingIdentity</span><span style="color:#f92672">();</span>
+    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> ident <span style="color:#f92672">=</span> Binder<span style="color:#f92672">.</span><span style="color:#a6e22e">clearCallingIdentity</span><span style="color:#f92672">();</span>
+  
+    <span style="color:#75715e">// Allow overriding a threshold with a system prop. e.g.
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// adb shell &#39;setprop log.looper.1000.main.slow 1 &amp;&amp; stop &amp;&amp; start&#39;
+</span><span style="color:#75715e"></span>    <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">int</span> thresholdOverride <span style="color:#f92672">=</span>
+            SystemProperties<span style="color:#f92672">.</span><span style="color:#a6e22e">getInt</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;log.looper.&#34;</span>
+                    <span style="color:#f92672">+</span> Process<span style="color:#f92672">.</span><span style="color:#a6e22e">myUid</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.&#34;</span>
+                    <span style="color:#f92672">+</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">()</span>
+                    <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;.slow&#34;</span><span style="color:#f92672">,</span> 0<span style="color:#f92672">);</span>
+  
+    <span style="color:#66d9ef">boolean</span> slowDeliveryDetected <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+  
+    <span style="color:#66d9ef">for</span> <span style="color:#f92672">(;;)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//next()这是取出消息的地方
+</span><span style="color:#75715e"></span>        Message msg <span style="color:#f92672">=</span> queue<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">();</span> <span style="color:#75715e">// might block
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>msg <span style="color:#f92672">==</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// No message indicates that the message queue is quitting.
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+  
+        <span style="color:#75715e">// This must be in a local variable, in case a UI event sets the logger
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> Printer logging <span style="color:#f92672">=</span> me<span style="color:#f92672">.</span><span style="color:#a6e22e">mLogging</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>logging <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            logging<span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&gt;&gt;&gt;&gt;&gt; Dispatching to &#34;</span> <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">+</span>
+                    msg<span style="color:#f92672">.</span><span style="color:#a6e22e">callback</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34;: &#34;</span> <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">what</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// Make sure the observer won&#39;t change while processing a transaction.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> Observer observer <span style="color:#f92672">=</span> sObserver<span style="color:#f92672">;</span>
+  
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> traceTag <span style="color:#f92672">=</span> me<span style="color:#f92672">.</span><span style="color:#a6e22e">mTraceTag</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">long</span> slowDispatchThresholdMs <span style="color:#f92672">=</span> me<span style="color:#f92672">.</span><span style="color:#a6e22e">mSlowDispatchThresholdMs</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">long</span> slowDeliveryThresholdMs <span style="color:#f92672">=</span> me<span style="color:#f92672">.</span><span style="color:#a6e22e">mSlowDeliveryThresholdMs</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>thresholdOverride <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            slowDispatchThresholdMs <span style="color:#f92672">=</span> thresholdOverride<span style="color:#f92672">;</span>
+            slowDeliveryThresholdMs <span style="color:#f92672">=</span> thresholdOverride<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> logSlowDelivery <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>slowDeliveryThresholdMs <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span> <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> logSlowDispatch <span style="color:#f92672">=</span> <span style="color:#f92672">(</span>slowDispatchThresholdMs <span style="color:#f92672">&gt;</span> 0<span style="color:#f92672">);</span>
+  
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> needStartTime <span style="color:#f92672">=</span> logSlowDelivery <span style="color:#f92672">||</span> logSlowDispatch<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">boolean</span> needEndTime <span style="color:#f92672">=</span> logSlowDispatch<span style="color:#f92672">;</span>
+  
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>traceTag <span style="color:#f92672">!=</span> 0 <span style="color:#f92672">&amp;&amp;</span> Trace<span style="color:#f92672">.</span><span style="color:#a6e22e">isTagEnabled</span><span style="color:#f92672">(</span>traceTag<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            Trace<span style="color:#f92672">.</span><span style="color:#a6e22e">traceBegin</span><span style="color:#f92672">(</span>traceTag<span style="color:#f92672">,</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getTraceName</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">));</span>
+        <span style="color:#f92672">}</span>
+  
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> dispatchStart <span style="color:#f92672">=</span> needStartTime <span style="color:#f92672">?</span> SystemClock<span style="color:#f92672">.</span><span style="color:#a6e22e">uptimeMillis</span><span style="color:#f92672">()</span> <span style="color:#f92672">:</span> 0<span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> dispatchEnd<span style="color:#f92672">;</span>
+        Object token <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>observer <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            token <span style="color:#f92672">=</span> observer<span style="color:#f92672">.</span><span style="color:#a6e22e">messageDispatchStarting</span><span style="color:#f92672">();</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">long</span> origWorkSource <span style="color:#f92672">=</span> ThreadLocalWorkSource<span style="color:#f92672">.</span><span style="color:#a6e22e">setUid</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">workSourceUid</span><span style="color:#f92672">);</span>
+        <span style="color:#66d9ef">try</span> <span style="color:#f92672">{</span>
+            msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">.</span><span style="color:#a6e22e">dispatchMessage</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>observer <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                observer<span style="color:#f92672">.</span><span style="color:#a6e22e">messageDispatched</span><span style="color:#f92672">(</span>token<span style="color:#f92672">,</span> msg<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+            dispatchEnd <span style="color:#f92672">=</span> needEndTime <span style="color:#f92672">?</span> SystemClock<span style="color:#f92672">.</span><span style="color:#a6e22e">uptimeMillis</span><span style="color:#f92672">()</span> <span style="color:#f92672">:</span> 0<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">catch</span> <span style="color:#f92672">(</span>Exception exception<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>observer <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                observer<span style="color:#f92672">.</span><span style="color:#a6e22e">dispatchingThrewException</span><span style="color:#f92672">(</span>token<span style="color:#f92672">,</span> msg<span style="color:#f92672">,</span> exception<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+            <span style="color:#66d9ef">throw</span> exception<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span> <span style="color:#66d9ef">finally</span> <span style="color:#f92672">{</span>
+            ThreadLocalWorkSource<span style="color:#f92672">.</span><span style="color:#a6e22e">restore</span><span style="color:#f92672">(</span>origWorkSource<span style="color:#f92672">);</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>traceTag <span style="color:#f92672">!=</span> 0<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                Trace<span style="color:#f92672">.</span><span style="color:#a6e22e">traceEnd</span><span style="color:#f92672">(</span>traceTag<span style="color:#f92672">);</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>logSlowDelivery<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>slowDeliveryDetected<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">((</span>dispatchStart <span style="color:#f92672">-</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span><span style="color:#f92672">)</span> <span style="color:#f92672">&lt;=</span> 10<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+                    Slog<span style="color:#f92672">.</span><span style="color:#a6e22e">w</span><span style="color:#f92672">(</span>TAG<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Drained&#34;</span><span style="color:#f92672">);</span>
+                    slowDeliveryDetected <span style="color:#f92672">=</span> <span style="color:#66d9ef">false</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>showSlowLog<span style="color:#f92672">(</span>slowDeliveryThresholdMs<span style="color:#f92672">,</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">when</span><span style="color:#f92672">,</span> dispatchStart<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;delivery&#34;</span><span style="color:#f92672">,</span>
+                        msg<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+                    <span style="color:#75715e">// Once we write a slow delivery log, suppress until the queue drains.
+</span><span style="color:#75715e"></span>                    slowDeliveryDetected <span style="color:#f92672">=</span> <span style="color:#66d9ef">true</span><span style="color:#f92672">;</span>
+                <span style="color:#f92672">}</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>logSlowDispatch<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            showSlowLog<span style="color:#f92672">(</span>slowDispatchThresholdMs<span style="color:#f92672">,</span> dispatchStart<span style="color:#f92672">,</span> dispatchEnd<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;dispatch&#34;</span><span style="color:#f92672">,</span> msg<span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+  
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>logging <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            logging<span style="color:#f92672">.</span><span style="color:#a6e22e">println</span><span style="color:#f92672">(</span><span style="color:#e6db74">&#34;&lt;&lt;&lt;&lt;&lt; Finished to &#34;</span> <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span> <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">callback</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+  
+        <span style="color:#75715e">// Make sure that during the course of dispatching the
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// identity of the thread wasn&#39;t corrupted.
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">final</span> <span style="color:#66d9ef">long</span> newIdent <span style="color:#f92672">=</span> Binder<span style="color:#f92672">.</span><span style="color:#a6e22e">clearCallingIdentity</span><span style="color:#f92672">();</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>ident <span style="color:#f92672">!=</span> newIdent<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Log<span style="color:#f92672">.</span><span style="color:#a6e22e">wtf</span><span style="color:#f92672">(</span>TAG<span style="color:#f92672">,</span> <span style="color:#e6db74">&#34;Thread identity changed from 0x&#34;</span>
+                    <span style="color:#f92672">+</span> Long<span style="color:#f92672">.</span><span style="color:#a6e22e">toHexString</span><span style="color:#f92672">(</span>ident<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; to 0x&#34;</span>
+                    <span style="color:#f92672">+</span> Long<span style="color:#f92672">.</span><span style="color:#a6e22e">toHexString</span><span style="color:#f92672">(</span>newIdent<span style="color:#f92672">)</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; while dispatching to &#34;</span>
+                    <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">target</span><span style="color:#f92672">.</span><span style="color:#a6e22e">getClass</span><span style="color:#f92672">().</span><span style="color:#a6e22e">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; &#34;</span>
+                    <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">callback</span> <span style="color:#f92672">+</span> <span style="color:#e6db74">&#34; what=&#34;</span> <span style="color:#f92672">+</span> msg<span style="color:#f92672">.</span><span style="color:#a6e22e">what</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+  
+        msg<span style="color:#f92672">.</span><span style="color:#a6e22e">recycleUnchecked</span><span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div></li>
+<li>
+<p>在Looper 的loop()中取出消息，再通过msg.target.dispatchMessage(msg)分发消息:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">dispatchMessage</span><span style="color:#f92672">(</span><span style="color:#a6e22e">@NonNull</span> Message msg<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>msg<span style="color:#f92672">.</span><span style="color:#a6e22e">callback</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//runnable取出消息
+</span><span style="color:#75715e"></span>        handleCallback<span style="color:#f92672">(</span>msg<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span> <span style="color:#66d9ef">else</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>mCallback <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">//Callback 取出消息
+</span><span style="color:#75715e"></span>            <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>mCallback<span style="color:#f92672">.</span><span style="color:#a6e22e">handleMessage</span><span style="color:#f92672">(</span>msg<span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+                <span style="color:#66d9ef">return</span><span style="color:#f92672">;</span>
+            <span style="color:#f92672">}</span>
+        <span style="color:#f92672">}</span>
+        <span style="color:#75715e">//直接取出消息
+</span><span style="color:#75715e"></span>        handleMessage<span style="color:#f92672">(</span>msg<span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div></li>
+</ul>
+<h5 id="三message是什么它里面都有什么">三、Message是什么？它里面都有什么？</h5>
+<ul>
+<li>Message说同属一点就是一种数据结构，它是一条单向链表，链表的每个节点就是Message,而Message节点中包含了what(消息标志)、arg1、arg2(Int类那基本数据类型)、obj(Object数据类型)、next(指向下一个Message的指针)、sPool(Message复用池)、target(发消息的那个Handler)、callback(Runnable),Message主要是携带消息标识符和数据的作用，为了节省资源，在Message中使用了消息复用池，当使用完的消息被回收，每次取消息时就不需要重新创建一个Message对象了，直接从消息池中取（调用obtain方法）：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> Message <span style="color:#a6e22e">obtain</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>sPoolSync<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">//消息复用池中取消息
+</span><span style="color:#75715e"></span>        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sPool <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            Message m <span style="color:#f92672">=</span> sPool<span style="color:#f92672">;</span>
+            sPool <span style="color:#f92672">=</span> m<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span><span style="color:#f92672">;</span>
+            m<span style="color:#f92672">.</span><span style="color:#a6e22e">next</span> <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">;</span>
+            m<span style="color:#f92672">.</span><span style="color:#a6e22e">flags</span> <span style="color:#f92672">=</span> 0<span style="color:#f92672">;</span> <span style="color:#75715e">// clear in-use flag
+</span><span style="color:#75715e"></span>            sPoolSize<span style="color:#f92672">--;</span>
+            <span style="color:#66d9ef">return</span> m<span style="color:#f92672">;</span>
+        <span style="color:#f92672">}</span>
+    <span style="color:#f92672">}</span>
+    <span style="color:#66d9ef">return</span> <span style="color:#66d9ef">new</span> Message<span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h5 id="四messagequeue是什么它和message的关系是怎样的">四、MessageQueue是什么？它和Message的关系是怎样的？</h5>
+<ul>
+<li>MessageQueue是一个消息队列，类似于我们日常排队，这个队伍就是消息队列MessageQueue，而每个人就相当于Message，它也是一种数据结构，它的实现就是一种先进先出的单向链表结构，每个Message进入前要根据延时when来排队，当loop的prepare参数为false消息队列会一直工作。</li>
+</ul>
+<h5 id="五looper是什么它的初始化时机是什么时候它是怎样拿到message的">五、Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？</h5>
+<ul>
+<li>Looper是一个取消息的轮询器，它是在ActivityThread main入口方法中被初始化的，此时的Looper就一直在运转，通过loop()轮询，通过myLooper()获取信息：</li>
+</ul>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#a6e22e">@Nullable</span> Looper <span style="color:#a6e22e">myLooper</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">return</span> sThreadLocal<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h5 id="六threadlocal是什么handlerthread是什么">六、ThreadLocal是什么？HandlerThread是什么？</h5>
+<p>前面提到Looper是在Activity中被初始化的，通过Looper.prepareMainLooper()启动Looper，此时调用prepare(false)初始化Looper进而驱动MessageQueue执行。</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">prepareMainLooper</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    prepare<span style="color:#f92672">(</span><span style="color:#66d9ef">false</span><span style="color:#f92672">);</span>
+    <span style="color:#66d9ef">synchronized</span> <span style="color:#f92672">(</span>Looper<span style="color:#f92672">.</span><span style="color:#a6e22e">class</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sMainLooper <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> IllegalStateException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;The main Looper has already been prepared.&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#f92672">}</span>
+        sMainLooper <span style="color:#f92672">=</span> myLooper<span style="color:#f92672">();</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">void</span> <span style="color:#a6e22e">prepare</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> quitAllowed<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#66d9ef">if</span> <span style="color:#f92672">(</span>sThreadLocal<span style="color:#f92672">.</span><span style="color:#a6e22e">get</span><span style="color:#f92672">()</span> <span style="color:#f92672">!=</span> <span style="color:#66d9ef">null</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> RuntimeException<span style="color:#f92672">(</span><span style="color:#e6db74">&#34;Only one Looper may be created per thread&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+    sThreadLocal<span style="color:#f92672">.</span><span style="color:#a6e22e">set</span><span style="color:#f92672">(</span><span style="color:#66d9ef">new</span> Looper<span style="color:#f92672">(</span>quitAllowed<span style="color:#f92672">));</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#66d9ef">private</span> <span style="color:#a6e22e">Looper</span><span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> quitAllowed<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    mQueue <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> MessageQueue<span style="color:#f92672">(</span>quitAllowed<span style="color:#f92672">);</span>
+    mThread <span style="color:#f92672">=</span> Thread<span style="color:#f92672">.</span><span style="color:#a6e22e">currentThread</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">//nativeInit是Java Native方法，mPtr这个变量是获取MessageQueue中下一个消息的关键
+</span><span style="color:#75715e"></span>MessageQueue<span style="color:#f92672">(</span><span style="color:#66d9ef">boolean</span> quitAllowed<span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    mQuitAllowed <span style="color:#f92672">=</span> quitAllowed<span style="color:#f92672">;</span>
+    mPtr <span style="color:#f92672">=</span> nativeInit<span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><ul>
+<li>ThreadLocal是一个本地线程副本变量工具类，主要用于将私有线程和该线程存放的副本对象做一个映射，各个线程之间的变量互不干扰。ThreadLocal本身不储存值 主要提供自身引用 和 操作ThreadLocalMap 属性值得方法，使用ThreadLocal会通过ThreadLocal的引用定位到到堆中Thread的类ThreadLocalMap里散列表里的值 从而达到线程私有，它里面维护一个ThreadLoacalMap内部类，ThreadLocal真正核心是ThreadLoacalMap这个类，初始容量为16，加载因子为当前容量大小的2/3，对应的节点是WeakRefrence&lt; ThreadLocal &gt;,保证ThreadLocal 不会泄漏，方便GC。</li>
+</ul>
+
+              
+            </div>
+          </div>
+          <div id="post-footer" class="post-footer main-content-wrap">
+            
+              
+                
+                
+                  <div class="post-footer-tags">
+                    <span class="text-color-light text-small">标签</span><br/>
+                    
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/android/">Android</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/handler/">Handler</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/message/">Message</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/messagequeue/">MessageQueue</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/looper/">Looper</a>
+
+  <a class="tag tag--primary tag--small" href="https://Edwardwmd.github.io/tags/activitythread/">ActivityThread</a>
+
+                  </div>
+                
+              
+            
+            <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/" data-tooltip="ArrayList扩容机制">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+            
+              
+                <div id="disqus_thread">
+  <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+              
+            
+          </div>
+        </article>
+        <footer id="footer" class="main-content-wrap">
+  <span class="copyrights">
+    &copy; 2021 EdwardWMD. All Rights Reserved
+  </span>
+</footer>
+
+      </div>
+      <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+        <div class="post-actions-wrap">
+  
+      <nav >
+        <ul class="post-actions post-action-nav">
+          
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--disabled">
+              
+                  <i class="fa fa-angle-left"></i>
+                  <span class="hide-xs hide-sm text-small icon-ml">下一篇</span>
+                </a>
+            </li>
+            <li class="post-action">
+              
+                <a class="post-action-btn btn btn--default tooltip--top" href="https://Edwardwmd.github.io/2021/06/arraylist%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6/" data-tooltip="ArrayList扩容机制">
+              
+                  <span class="hide-xs hide-sm text-small icon-mr">上一篇</span>
+                  <i class="fa fa-angle-right"></i>
+                </a>
+            </li>
+          
+        </ul>
+      </nav>
+    <ul class="post-actions post-action-share" >
+      
+        <li class="post-action hide-lg hide-md hide-sm">
+          <a class="post-action-btn btn btn--default btn-open-shareoptions" href="#btn-open-shareoptions">
+            <i class="fa fa-share-alt"></i>
+          </a>
+        </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-facebook-official"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://twitter.com/intent/tweet?text=https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-twitter"></i>
+            </a>
+          </li>
+        
+          <li class="post-action hide-xs">
+            <a class="post-action-btn btn btn--default" target="new" href="https://plus.google.com/share?url=https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/">
+              <i class="fa fa-google-plus"></i>
+            </a>
+          </li>
+        
+      
+      
+        <li class="post-action">
+          <a class="post-action-btn btn btn--default" href="#disqus_thread">
+            <i class="fa fa-comment-o"></i>
+          </a>
+        </li>
+      
+      <li class="post-action">
+        
+          <a class="post-action-btn btn btn--default" href="#">
+        
+          <i class="fa fa-list"></i>
+        </a>
+      </li>
+    </ul>
+  
+</div>
+
+      </div>
+      <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+  <i id="btn-close-shareoptions" class="fa fa-close"></i>
+  <ul class="share-options">
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F09%2F%25E6%25B7%25B1%25E5%2585%25A5%25E7%2590%2586%25E8%25A7%25A3android-handler%25E6%25B6%2588%25E6%2581%25AF%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-facebook-official"></i><span>分享到 Facebook</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://twitter.com/intent/tweet?text=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F09%2F%25E6%25B7%25B1%25E5%2585%25A5%25E7%2590%2586%25E8%25A7%25A3android-handler%25E6%25B6%2588%25E6%2581%25AF%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-twitter"></i><span>分享到 Twitter</span>
+        </a>
+      </li>
+    
+      <li class="share-option">
+        <a class="share-option-btn" target="new" href="https://plus.google.com/share?url=https%3A%2F%2FEdwardwmd.github.io%2F2021%2F09%2F%25E6%25B7%25B1%25E5%2585%25A5%25E7%2590%2586%25E8%25A7%25A3android-handler%25E6%25B6%2588%25E6%2581%25AF%25E6%259C%25BA%25E5%2588%25B6%2F">
+          <i class="fa fa-google-plus"></i><span>分享到 Google&#43;</span>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+<div id="share-options-mask" class="share-options-mask"></div>
+    </div>
+    
+    <div id="about">
+  <div id="about-card">
+    <div id="about-btn-close">
+      <i class="fa fa-remove"></i>
+    </div>
+    
+      <img id="about-card-picture" src="https://avatars.githubusercontent.com/u/20928578?v=4" alt="作者的图片" />
+    
+    <h4 id="about-card-name">EdwardWMD</h4>
+    
+      <div id="about-card-bio">持之以恒，便可稀土掘金~</div>
+    
+    
+      <div id="about-card-job">
+        <i class="fa fa-briefcase"></i>
+        <br/>
+        Android Developer
+      </div>
+    
+    
+      <div id="about-card-location">
+        <i class="fa fa-map-marker"></i>
+        <br/>
+        ShenZhen
+      </div>
+    
+  </div>
+</div>
+
+    
+
+    
+  
+    
+      <div id="cover" style="background-image:url('https://Edwardwmd.github.io/images/cover.png');"></div>
+    
+  
+
+
+    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/2.1.7/js/jquery.fancybox.min.js" integrity="sha256-GEAnjcTqVP+vBp3SSc8bEDQqvWAZMiHyUSIorrWwH50=" crossorigin="anonymous"></script>
+
+
+<script src="https://Edwardwmd.github.io/js/script-pcw6v3xilnxydl1vddzazdverrnn9ctynvnxgwho987mfyqkuylcb1nlt.min.js"></script>
+
+
+<script lang="javascript">
+window.onload = updateMinWidth;
+window.onresize = updateMinWidth;
+document.getElementById("sidebar").addEventListener("transitionend", updateMinWidth);
+function updateMinWidth() {
+  var sidebar = document.getElementById("sidebar");
+  var main = document.getElementById("main");
+  main.style.minWidth = "";
+  var w1 = getComputedStyle(main).getPropertyValue("min-width");
+  var w2 = getComputedStyle(sidebar).getPropertyValue("width");
+  var w3 = getComputedStyle(sidebar).getPropertyValue("left");
+  main.style.minWidth = `calc(${w1} - ${w2} - ${w3})`;
+}
+</script>
+
+<script>
+$(document).ready(function() {
+  hljs.configure({ classPrefix: '', useBR: false });
+  $('pre.code-highlight > code, pre > code').each(function(i, block) {
+    if (!$(this).hasClass('codeblock')) {
+      $(this).addClass('codeblock');
+    }
+    hljs.highlightBlock(block);
+  });
+});
+</script>
+
+
+  
+    
+      <script>
+        var disqus_config = function () {
+          this.page.url = 'https:\/\/Edwardwmd.github.io\/2021\/09\/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6\/';
+          
+            this.page.identifier = '\/2021\/09\/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6\/'
+          
+        };
+        (function() {
+          
+          
+          if (window.location.hostname == "localhost") {
+            return;
+          }
+          var d = document, s = d.createElement('script');
+          var disqus_shortname = 'hugo-tranquilpeak-theme';
+          s.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+
+          s.setAttribute('data-timestamp', +new Date());
+          (d.head || d.body).appendChild(s);
+        })();
+      </script>
+    
+  
+
+
+
+
+    
+  </body>
+</html>
+

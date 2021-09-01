@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Android on </title>
-    <link>https://Edwardwmd.github.io/categories/android/</link>
-    <description>Recent content in Android on </description>
+    <title>Looper on </title>
+    <link>https://Edwardwmd.github.io/tags/looper/</link>
+    <description>Recent content in Looper on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Wed, 01 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/categories/android/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/tags/looper/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>深入理解Android Handler消息机制</title>
       <link>https://Edwardwmd.github.io/2021/09/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3android-handler%E6%B6%88%E6%81%AF%E6%9C%BA%E5%88%B6/</link>
@@ -17,15 +17,6 @@
   ①Handler是什么？。 ②消息是怎么发送的，它的整个流程是什么？ ③Message是什么？它里面都有什么？ ④MessageQueue是什么？它和Message的关系是怎样的？ ⑤Looper是什么？它的初始化时机是什么时候？它是怎样拿到Message的？ ⑥ThreadLocal是什么？HandlerThread是什么？       一、 Handler是什么  它是Android定义的一套线程间切换，特别是实现主线程和子线程切换的通讯机制，因为Android是强烈规定更新UI的线程为子线程，其他线程为子线程（分线程），耗时操作不建议在主线程上执行，这样会导致手机ANR(Application Not Responding),早期的ANR手机直接崩溃。
 二、消息是怎么发送的，它的整个流程是什么？  当一个消息被发送，调用Handler的sendMessage方法发送消息：  public final boolean sendMessage(@NonNull Message msg) { return sendMessageDelayed(msg, 0); }  消息进入消息队列：  private boolean enqueueMessage(@NonNull MessageQueue queue, @NonNull Message msg, long uptimeMillis) { msg.target = this; msg.workSourceUid = ThreadLocalWorkSource.getUid(); if (mAsynchronous) { msg.setAsynchronous(true); } return queue.enqueueMessage(msg, uptimeMillis); }   消息通过消息时延when的大小排队：
 boolean enqueueMessage(Message msg, long when) { if (msg.</description>
-    </item>
-    
-    <item>
-      <title>Android屏幕适配的那些事</title>
-      <link>https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/</link>
-      <pubDate>Tue, 20 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://Edwardwmd.github.io/2021/04/android%E5%B1%8F%E5%B9%95%E9%80%82%E9%85%8D%E7%9A%84%E9%82%A3%E4%BA%9B%E4%BA%8B/</guid>
-      <description>&lt;p&gt;  关于Android的屏幕适配我想大家都不陌生了，Android 的设备多种多样，屏幕碎片化严重，有着不同的屏幕尺寸和像素密度。 尽管系统可通过基本的缩放和调整大小功能使界面适应不同屏幕，但还需要进一步优化，以确保界面能够在各类屏幕上趋近完美的展现。&lt;/p&gt;</description>
     </item>
     
   </channel>

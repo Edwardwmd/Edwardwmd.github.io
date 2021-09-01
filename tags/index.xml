@@ -6,7 +6,61 @@
     <description>Recent content in Tags on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 17 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ActivityThread</title>
+      <link>https://Edwardwmd.github.io/tags/activitythread/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/tags/activitythread/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Android</title>
+      <link>https://Edwardwmd.github.io/tags/android/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/tags/android/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Handler</title>
+      <link>https://Edwardwmd.github.io/tags/handler/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/tags/handler/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Looper</title>
+      <link>https://Edwardwmd.github.io/tags/looper/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/tags/looper/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Message</title>
+      <link>https://Edwardwmd.github.io/tags/message/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/tags/message/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>MessageQueue</title>
+      <link>https://Edwardwmd.github.io/tags/messagequeue/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/tags/messagequeue/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>ArrayList</title>
       <link>https://Edwardwmd.github.io/tags/arraylist/</link>
@@ -67,15 +121,6 @@
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>https://Edwardwmd.github.io/tags/%E9%93%BE%E8%A1%A8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Android</title>
-      <link>https://Edwardwmd.github.io/tags/android/</link>
-      <pubDate>Tue, 20 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://Edwardwmd.github.io/tags/android/</guid>
       <description></description>
     </item>
     

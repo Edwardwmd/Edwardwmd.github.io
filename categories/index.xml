@@ -6,7 +6,25 @@
     <description>Recent content in Categories on </description>
     <generator>Hugo -- gohugo.io</generator>
     <language>zh-cn</language>
-    <lastBuildDate>Thu, 17 Jun 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 01 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://Edwardwmd.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Android</title>
+      <link>https://Edwardwmd.github.io/categories/android/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/categories/android/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Handler</title>
+      <link>https://Edwardwmd.github.io/categories/handler/</link>
+      <pubDate>Wed, 01 Sep 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://Edwardwmd.github.io/categories/handler/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>ArrayList</title>
       <link>https://Edwardwmd.github.io/categories/arraylist/</link>
@@ -40,15 +58,6 @@
       <pubDate>Fri, 30 Apr 2021 00:00:00 +0000</pubDate>
       
       <guid>https://Edwardwmd.github.io/categories/java/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Android</title>
-      <link>https://Edwardwmd.github.io/categories/android/</link>
-      <pubDate>Tue, 20 Apr 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://Edwardwmd.github.io/categories/android/</guid>
       <description></description>
     </item>
     
